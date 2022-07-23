@@ -4,6 +4,9 @@
 // vue2.0插件写法要素：导出一个对象，有install函数，默认传入了Vue构造函数，Vue基础之上扩展
 // vue3.0插件写法要素：导出一个对象，有install函数，默认传入了app应用实例，app基础之上扩展
 
+// 默认图片
+import defaultImg from '@/assets/images/200.png'
+
 // import XtxSkeleton from './xtx-skeleton.vue'
 // import XtsCarousel from './xtx-carousel.vue'
 // import XtxMore from './xtx-more.vue'
@@ -15,11 +18,9 @@
 // 函数 importFn：
 // 1.可根据路径来导入组件
 // 2.其属性 keys{ Function } 可获取依据 context函数配置项的所有文件路径
+const importFn = require.context('./', false, /\.vue$/)
 // console.log(importFn.keys());
 
-// 默认图片
-import defaultImg from '@/assets/images/200.png'
-const importFn = require.context('./', false, /\.vue$/)
 
 // 图片懒加载
 // 原理：将请求服务器返回的图片地址传给自定义指令，当进入可视区时，将自定义指令中存储的图片地址赋值给绑定指令的元素的 src，从而展示图片
