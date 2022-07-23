@@ -10,7 +10,7 @@ export const getBrand = (limit = 6) => {
 }
 
 /**
- * 获取广告图
+ * 获取轮播图
  * @returns Promise
  */
 export const getBanner = () => {

@@ -6,6 +6,7 @@ import { getCategoryList } from '@/api/category'
 export default {
   namespaced: true,
   state: {
+    // 首页所有分类数据
     list: topCategory.map(item => ({ name: item }))
   },
 
