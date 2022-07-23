@@ -29,13 +29,24 @@ export default {
   z-index: 98;
 }
 // 调整左箭头和底部指示器位置(样式覆盖)
+// .xtx-carousel {
+//   // 左箭头
+//   ::v-deep .carousel-btn.prev {
+//     left: 270px;
+//   }
+//   // 底部指示器
+//   ::v-deep .carousel-indicator {
+//     padding-left: 250px;
+//   }
+// }
+// 深度选择器的改变
 .xtx-carousel {
   // 左箭头
-  ::v-deep .carousel-btn.prev {
+  :deep(.carousel-btn.prev) {
     left: 270px;
   }
   // 底部指示器
-  ::v-deep .carousel-indicator {
+  :deep(.carousel-indicator) {
     padding-left: 250px;
   }
 }
