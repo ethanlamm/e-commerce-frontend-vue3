@@ -1,19 +1,19 @@
 <template>
-    <!-- Layout：有头部和底部的一级路由容器 -->
-    <div class="LayoutConatiner">
-        <!-- 顶部通栏 -->
-        <AppTopnav></AppTopnav>
-        <!-- 头部组件 -->
-        <AppHeader></AppHeader>
-        <!-- 吸顶组件 -->
-        <AppHeaderSticky></AppHeaderSticky>
-        <!-- 二级路由容器(出口) -->
-        <div class="main">
-            <router-view></router-view>
-        </div>
-        <!-- 底部组件 -->
-       <AppFooter></AppFooter>
+  <!-- Layout：有头部和底部的一级路由容器 -->
+  <div class="LayoutConatiner">
+    <!-- 顶部通栏 -->
+    <AppTopnav></AppTopnav>
+    <!-- 头部组件 -->
+    <AppHeader></AppHeader>
+    <!-- 吸顶组件 -->
+    <AppHeaderSticky></AppHeaderSticky>
+    <!-- 二级路由容器(出口) -->
+    <div class="main">
+      <router-view></router-view>
     </div>
+    <!-- 底部组件 -->
+    <AppFooter></AppFooter>
+  </div>
 </template>
 
 <script>
@@ -33,5 +33,4 @@ export default {
 </script>
 
 <style lang="less" scoped>
-
 </style>
