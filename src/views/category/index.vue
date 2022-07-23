@@ -37,25 +37,25 @@
 </template>
 
 <script>
-import GoodsItem from './components/goods-item'
-import { ref, computed, watch } from 'vue'
-import { useStore } from 'vuex'
-import { useRoute } from 'vue-router'
-import { getBanner } from '@/api/home'
-import { getTopCategory } from '@/api/category'
+import GoodsItem from "./components/goods-item";
+import { ref, computed, watch } from "vue";
+import { useStore } from "vuex";
+import { useRoute } from "vue-router";
+import { getBanner } from "@/api/home";
+import { getTopCategory } from "@/api/category";
 export default {
-  name: 'CategoryVue',
+  name: "CategoryVue",
   components: { GoodsItem },
-  setup () {
+  setup() {
     // 1.轮播图
-    const sliders = ref([])
+    const sliders = ref([]);
     getBanner().then((data) => {
-      sliders.value = data.result
-    })
+      sliders.value = data.result;
+    });
 
     // 2.面包屑+所有子分类  从vuex中拿数据
-    const store = useStore()
-    const route = useRoute()
+    const store = useStore();
+    const route = useRoute();
     // #region
     // 1.store.state.category.list : 所有一级分类以及其子分类
     // console.log(store.state.category.list);
@@ -69,37 +69,37 @@ export default {
     //      }
     // #endregion
     const currCategory = computed(() => {
-      let temp = {}
+      let temp = {};
       const findItem = store.state.category.list.find(
         (item) => item.id === route.params.id
-      )
+      );
       if (findItem) {
-        temp = findItem
+        temp = findItem;
       }
-      return temp
-    })
+      return temp;
+    });
     // console.log(currCategory.value);
 
     // 3.依据路径 id 获取 顶级分类，children属性即为各子分类
     // 监听地址栏id的变化，从而调用获取数据的方法
-    const subList = ref([])
+    const subList = ref([]);
     // 获取数据的方法
     const getSubList = (id) => {
       getTopCategory(id).then((data) => {
-        subList.value = data.result.children
+        subList.value = data.result.children;
         // console.log(subList.value);
-      })
-    }
+      });
+    };
     watch(
       () => route.params.id,
       (newValue) => {
-        newValue && getSubList(newValue)
+        newValue && getSubList(newValue);
       },
       { immediate: true }
-    )
-    return { sliders, currCategory, subList }
-  }
-}
+    );
+    return { sliders, currCategory, subList };
+  },
+};
 </script>
 
 <style lang="less" scoped>
