@@ -4,15 +4,26 @@
       <RouterLink to="/">首页</RouterLink>
     </li>
     <!-- 一级分类 -->
-    <li v-for="category in categoryList" :key="category.id" @mouseenter="show(category)" @mouseleave="hide(category)">
-      <router-link :to="`/category/${category.id}`" @click="hide(category)">{{category.name}}</router-link>
-      <div class="layer" :class="{open:category.flag}">
+    <!-- mousemove：解决点击二级分类时，由于页面切换至顶部，鼠标再次进入一级分类，二级分类弹框再次弹出的问题 -->
+    <li
+      v-for="category in categoryList"
+      :key="category.id"
+      @mousemove="show(category)"
+      @mouseleave="hide(category)"
+    >
+      <router-link :to="`/category/${category.id}`" @click="hide(category)">
+        {{ category.name }}
+      </router-link>
+      <div class="layer" :class="{ open: category.flag }">
         <ul>
           <!-- 二级分类 -->
           <li v-for="subItem in category.children" :key="subItem.id">
-            <router-link :to="`/category/sub/${subItem.id}`"  @click="hide(category)">
-              <img :src="subItem.picture" >
-              <p>{{subItem.name}}</p>
+            <router-link
+              :to="`/category/sub/${subItem.id}`"
+              @click="hide(category)"
+            >
+              <img :src="subItem.picture" />
+              <p>{{ subItem.name }}</p>
             </router-link>
           </li>
         </ul>
@@ -76,7 +87,7 @@ export default {
 }
 // 二级分类
 .layer {
-  &.open{
+  &.open {
     height: 132px;
     opacity: 1;
   }
@@ -89,7 +100,7 @@ export default {
   overflow: hidden;
   opacity: 0;
   box-shadow: 0 0 5px #ccc;
-  transition: all .2s .1s;
+  transition: all 0.2s 0.1s;
   ul {
     display: flex;
     flex-wrap: wrap;

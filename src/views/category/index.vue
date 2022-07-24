@@ -101,7 +101,11 @@ export default {
     watch(
       () => route.params.id,
       (newValue) => {
-        newValue && getSubList(newValue)
+        // newValue && getSubList(newValue)
+        // 由于二级分类也有id，上述拿id请求数据的方法，会造成拿二级分类的id请求一级分类的数据(不必要请求)，加判断路径后再发请求
+        newValue &&
+          route.path === `/category/${newValue}` &&
+          getSubList(newValue)
       },
       { immediate: true }
     )
