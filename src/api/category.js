@@ -12,3 +12,11 @@ export const getCategoryList = () => {
 export const getTopCategory = (id) => {
   return request('/category', 'get', { id })
 }
+
+/**
+ * 获取二级分类筛选条件数据
+ * @param {String} id - 二级分类ID
+ */
+export const getSubCategoryFilter = (id) => {
+  return request('/category/sub/filter', 'get', { id })
+}
