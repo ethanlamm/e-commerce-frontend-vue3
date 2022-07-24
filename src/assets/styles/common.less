@@ -103,10 +103,24 @@ ul {
     clear: both;
 }
 
+// 进入（显示，创建） 
+// v-enter 进入前 （vue3.0 v-enter-from） 
+// v-enter-active 进入中 
+// v-enter-to 进入后 
+
+// 离开（隐藏，移除） 
+// v-leave 进入前 （vue3.0 v-leave-from） 
+// v-leave-active 进入中 
+// v-leave-to 进入后
+
+// 由于使用到过渡的样式的 transition 组件会在全局使用，因此过渡的样式写在 common.less 中
+
 // 骨架动画离开的淡出效果
 // 无进入效果(进入时直接显示数据即可)
 .fade {
     &-leave {
+
+        // 离开时
         &-active {
             position: absolute;
             width: 100%;
@@ -114,8 +128,44 @@ ul {
             z-index: 1;
         }
 
+        // 离开后
         &-to {
             opacity: 0;
         }
     }
+}
+
+// 面包屑动画
+// 效果：
+// 进入前：20px位移 透明度0；进入中：过渡；进入后：原位置(0位移)，透明度1
+// 离开前：原位置(0位移)，透明度1；离开中：过渡；离开后：20px位移 透明度0
+.fade-right {
+
+    &-enter-from,
+    &-leave-to {
+        transform: translateX(20px);
+        opacity: 0;
+    }
+
+    &-enter-active,
+    &-leave-active {
+        transition: all 0.5s;
+    }
+
+    &-enter-active {
+        // mode="out-in" 无效，用动画延迟替代
+        transition-delay: .5s;
+    }
+
+    &-enter-to,
+    &-leave-from {
+        transform: none;
+        opacity: 1;
+    }
+}
+
+.fade-right-enter-to,
+.fade-right-leave-from {
+    opacity: 1;
+    transform: none;
 }
