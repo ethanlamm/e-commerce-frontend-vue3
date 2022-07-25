@@ -9,7 +9,7 @@
           v-for="item in filterData.brands"
           :key="item.id"
           :class="{ active: item.id === filterData.selectedBrand }"
-          @click="filterData.selectedBrand = item.id"
+          @click="changBrand(item.id)"
         >
           {{ item.name }}
         </a>
@@ -27,7 +27,7 @@
           v-for="p in saleprops.properties"
           :key="p.id"
           :class="{ active: p.id === saleprops.selectedProps }"
-          @click="saleprops.selectedProps = p.id"
+          @click="changProps(saleprops, p.id)"
         >
           {{ p.name }}
         </a>
@@ -49,7 +49,7 @@ import { useRoute } from 'vue-router'
 import { getSubCategoryFilter } from '@/api/category'
 export default {
   name: 'SubFilter',
-  setup () {
+  setup (props, { emit }) {
     const route = useRoute()
     const filterData = ref({})
     const filterLoading = ref(false)
@@ -64,17 +64,21 @@ export default {
         data.result.brands.unshift({ id: null, name: '全部' })
         // 2.属性处理
         data.result.saleProperties.forEach((item) => {
+          // 选中的属性(id)
           item.selectedProps = null
           item.properties.unshift({ id: null, name: '全部' })
         })
+        // 选中的品牌(id)
         filterData.value.selectedBrand = null
         filterData.value.brands = data.result.brands
         filterData.value.saleProps = data.result.saleProperties
+
         // 数据请求完毕，则隐藏骨架显示数据
         filterLoading.value = false
       })
       //   console.log(filterData.value);
     }
+
     // 监听路径 id 的变化
     watch(
       () => route.params.id,
@@ -86,7 +90,49 @@ export default {
       { immediate: true }
     )
 
-    return { filterData, filterLoading }
+    // 获取筛选条件
+    const getFilterParams = () => {
+      const temp = { brandId: null, attrs: [] }
+      // 1.选中的品牌id
+      temp.brandId = filterData.value.selectedBrand
+      // 2.1筛选出选中的属性，排除null(全部)
+      filterData.value.saleProps.forEach((saleprops) => {
+        if (saleprops.selectedProps) {
+          // 选中的属性不是全部(null)
+          const prop = saleprops.properties.find(
+            (item) => item.id === saleprops.selectedProps
+          )
+          temp.attrs.push({
+            groupName: saleprops.name,
+            propertyName: prop.name
+          })
+        }
+      })
+      // 2.2若属性没有选择，默认全部，则将attrs设为null
+      if (!temp.attrs.length) temp.attrs = null
+      // 参考接口文档  {brandId:Integer, attrs:[{groupName:String, propertyName:String},...]}
+      return temp
+    }
+
+    // 1.品牌改变
+    const changBrand = (id) => {
+      if (filterData.value.selectedBrand === id) return
+      filterData.value.selectedBrand = id
+
+      // 通知父组件发请求
+      emit('filter-change', getFilterParams())
+    }
+
+    // 2.属性改变
+    const changProps = (item, id) => {
+      if (item.selectedProps === id) return
+      item.selectedProps = id
+
+      // 通知父组件发请求
+      emit('filter-change', getFilterParams())
+    }
+
+    return { filterData, filterLoading, changBrand, changProps }
   }
 }
 </script>

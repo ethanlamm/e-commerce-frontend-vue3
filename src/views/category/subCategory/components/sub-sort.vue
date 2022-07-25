@@ -51,8 +51,10 @@
       </a>
     </div>
     <div class="check">
-      <XtxCheckbox v-model="sortParams.inventory">仅显示有货商品</XtxCheckbox>
-      <XtxCheckbox v-model="sortParams.onlyDiscount">
+      <XtxCheckbox @click="changHandler" v-model="sortParams.inventory"
+        >仅显示有货商品</XtxCheckbox
+      >
+      <XtxCheckbox @click="changHandler" v-model="sortParams.onlyDiscount">
         仅显示特惠商品
       </XtxCheckbox>
     </div>
@@ -62,7 +64,7 @@
 import { reactive } from 'vue'
 export default {
   name: 'SubSort',
-  setup () {
+  setup (props, { emit }) {
     //   参数依据接口文档整理
     const sortParams = reactive({
       // 默认排序null | 最新商品publishTime | 最高人气orderNum | 评论最多evaluateNum | 价格price
@@ -95,8 +97,24 @@ export default {
         // 重置价格排序为空
         sortParams.sortMethod = null
       }
+      // 排序改变，通知父组件并传出排序参数
+      emit('sort-change', sortParams)
     }
-    return { sortParams, changeSort }
+
+    // 勾选复选框(状态改变)
+    const changHandler = () => {
+      emit('sort-change', sortParams)
+    }
+
+    // 重置参数方法---要return出去
+    const resetParams = () => {
+      // 响应式数据，不能直接赋值
+      sortParams.sortField = null
+      sortParams.sortMethod = null
+      sortParams.inventory = false
+      sortParams.onlyDiscount = false
+    }
+    return { sortParams, changeSort, changHandler, resetParams }
   }
 }
 </script>
