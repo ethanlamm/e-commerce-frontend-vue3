@@ -1,8 +1,8 @@
 <template>
-  <div class="xtx-goods-page">
+  <div class="xtx-goods-page" v-if="goods">
     <div class="container">
       <!-- 面包屑 -->
-      <XtxBread v-if="goods && goods.categories && goods.categories.length">
+      <XtxBread>
         <XtxBreadItem to="/">首页</XtxBreadItem>
         <XtxBreadItem :to="`/category/${goods.categories[1].id}`">
           {{ goods.categories[1].name }}
@@ -13,7 +13,12 @@
         <XtxBreadItem>{{ goods.name }}</XtxBreadItem>
       </XtxBread>
       <!-- 商品信息 -->
-      <div class="goods-info"></div>
+      <div class="goods-info">
+        <div class="media">
+          <GoodsImage :images="goods.mainPictures"></GoodsImage>
+        </div>
+        <div class="spec"></div>
+      </div>
       <!-- 商品推荐 -->
       <GoodsRelevant />
       <!-- 商品详情 -->
@@ -34,11 +39,12 @@
 <script>
 import { nextTick, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import GoodsRelevant from './components/goods-relevant'
 import { getGoods } from '@/api/goods'
+import GoodsRelevant from './components/goods-relevant'
+import GoodsImage from './components/goods-image.vue'
 export default {
   name: 'XtxGoodsPage',
-  components: { GoodsRelevant },
+  components: { GoodsRelevant, GoodsImage },
   setup (props) {
     let goods = ref(null)
     goods = getData()
@@ -73,6 +79,16 @@ const getData = () => {
 .goods-info {
   min-height: 600px;
   background: #fff;
+  display: flex;
+  .media {
+    width: 580px;
+    height: 600px;
+    padding: 30px 50px;
+  }
+  .spec {
+    flex: 1;
+    padding: 30px 30px 30px 0;
+  }
 }
 .goods-footer {
   display: flex;
