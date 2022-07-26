@@ -15,9 +15,15 @@
       <!-- 商品信息 -->
       <div class="goods-info">
         <div class="media">
+          <!-- 图片区 -->
           <GoodsImage :images="goods.mainPictures"></GoodsImage>
+          <!-- 销售属性区 -->
+          <GoodsSales></GoodsSales>
         </div>
-        <div class="spec"></div>
+        <div class="spec">
+          <!-- 名称信息 -->
+          <GoodsName :goods="goods"></GoodsName>
+        </div>
       </div>
       <!-- 商品推荐 -->
       <GoodsRelevant />
@@ -42,9 +48,11 @@ import { useRoute } from 'vue-router'
 import { getGoods } from '@/api/goods'
 import GoodsRelevant from './components/goods-relevant'
 import GoodsImage from './components/goods-image.vue'
+import GoodsSales from './components/goods-sales'
+import GoodsName from './components/goods-name'
 export default {
   name: 'XtxGoodsPage',
-  components: { GoodsRelevant, GoodsImage },
+  components: { GoodsRelevant, GoodsImage, GoodsSales, GoodsName },
   setup (props) {
     let goods = ref(null)
     goods = getData()
