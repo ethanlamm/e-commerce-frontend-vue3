@@ -1,12 +1,16 @@
 <template>
-  <div class='xtx-goods-page'>
+  <div class="xtx-goods-page">
     <div class="container">
       <!-- 面包屑 -->
-      <XtxBread>
+      <XtxBread v-if="goods && goods.categories && goods.categories.length">
         <XtxBreadItem to="/">首页</XtxBreadItem>
-        <XtxBreadItem to="/">手机</XtxBreadItem>
-        <XtxBreadItem to="/">华为</XtxBreadItem>
-        <XtxBreadItem to="/">p30</XtxBreadItem>
+        <XtxBreadItem :to="`/category/${goods.categories[1].id}`">
+          {{ goods.categories[1].name }}
+        </XtxBreadItem>
+        <XtxBreadItem :to="`/category/sub/${goods.categories[0].id}`">
+          {{ goods.categories[0].name }}
+        </XtxBreadItem>
+        <XtxBreadItem>{{ goods.name }}</XtxBreadItem>
       </XtxBread>
       <!-- 商品信息 -->
       <div class="goods-info"></div>
@@ -28,10 +32,40 @@
 </template>
 
 <script>
+import { nextTick, ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import GoodsRelevant from './components/goods-relevant'
+import { getGoods } from '@/api/goods'
 export default {
   name: 'XtxGoodsPage',
-  components: { GoodsRelevant }
+  components: { GoodsRelevant },
+  setup (props) {
+    let goods = ref(null)
+    goods = getData()
+    return { goods }
+  }
+}
+// 获取数据
+const getData = () => {
+  const temp = ref(null)
+  const route = useRoute()
+  watch(
+    () => route.params.id,
+    (newValue) => {
+      if (newValue && route.path === `/product/${newValue}`) {
+        getGoods(newValue).then((data) => {
+          temp.value = null
+          nextTick(() => {
+            temp.value = data.result
+            console.log(temp.value)
+          })
+        })
+      }
+    },
+    { immediate: true }
+  )
+
+  return temp
 }
 </script>
 
