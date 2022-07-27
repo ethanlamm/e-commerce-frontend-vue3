@@ -1,14 +1,19 @@
 <template>
   <div class="xtx-city" ref="target">
     <div class="select" :class="{ active }" @click="toggleDialog">
-      <span class="placeholder">请选择配送地址</span>
-      <span class="value"></span>
+      <span v-if="!fullLocation" class="placeholder">请选择配送地址</span>
+      <span v-else class="value">{{ fullLocation }}</span>
       <i class="iconfont icon-angle-down"></i>
     </div>
     <div class="option" v-if="active">
       <div v-if="loading" class="loading"></div>
       <template v-else>
-        <span class="ellipsis" v-for="item in curlist" :key="item.code">
+        <span
+          class="ellipsis"
+          v-for="item in curlist"
+          :key="item.code"
+          @click="select(item)"
+        >
           {{ item.name }}
         </span>
       </template>
@@ -16,12 +21,18 @@
   </div>
 </template>
 <script>
-import { computed, ref } from 'vue'
+import { computed, ref, reactive } from 'vue'
 import { onClickOutside } from '@vueuse/core'
 import axios from 'axios'
 export default {
   name: 'XtxCity',
-  setup () {
+  props: {
+    fullLocation: {
+      tyepe: String,
+      default: ''
+    }
+  },
+  setup (props, { emit }) {
     // 控制展开收起,默认收起
     const active = ref(false)
     // 城市数据
@@ -34,6 +45,10 @@ export default {
       active.value = true
       // 打开时 loading
       loading.value = true
+      // 每次打开先清空上次选择的数据
+      for (const key in selectedRecord) {
+        selectedRecord[key] = ''
+      }
       // 打开时请求数据
       getCityData().then((data) => {
         cityData.value = data
@@ -59,11 +74,58 @@ export default {
     // 计算属性
     const curlist = computed(() => {
       // 城市数据结构：省-市-区
-      const templist = cityData.value // 省
-
+      // 省
+      let templist = cityData.value
+      // 市
+      if (selectedRecord.provinceCode) {
+        // 说明已选择了省，此时应该展示该省的市列表
+        templist = templist.find(
+          (item) => item.code === selectedRecord.provinceCode
+        ).areaList
+      }
+      // 区
+      if (selectedRecord.cityCode) {
+        // 说明已选择了市，此时应该展示该市的地区列表
+        templist = templist.find(
+          (item) => item.code === selectedRecord.cityCode
+        ).areaList
+      }
       return templist
     })
-    return { active, toggleDialog, target, curlist, loading }
+
+    // 记录选择的地址
+    const selectedRecord = reactive({
+      provinceCode: '',
+      provinceName: '',
+      cityCode: '',
+      cityName: '',
+      countryCode: '',
+      countryName: '',
+      fullLocation: ''
+    })
+    // 选择地址方法
+    const select = (item) => {
+      // 省
+      if (item.level === 0) {
+        selectedRecord.provinceCode = item.code
+        selectedRecord.provinceName = item.name
+      }
+      // 市
+      if (item.level === 1) {
+        selectedRecord.cityCode = item.code
+        selectedRecord.cityName = item.name
+      }
+      // 区
+      if (item.level === 2) {
+        selectedRecord.countryCode = item.code
+        selectedRecord.countryName = item.name
+        // 选择完毕，关闭选择对话框，传数据给父组件
+        selectedRecord.fullLocation = `${selectedRecord.provinceName} ${selectedRecord.cityName} ${selectedRecord.countryName}`
+        closeDialog()
+        emit('selectedAttr', selectedRecord)
+      }
+    }
+    return { active, toggleDialog, target, curlist, loading, select }
   }
 }
 // 获取城市地址数据

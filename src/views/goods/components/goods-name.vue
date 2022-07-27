@@ -13,7 +13,13 @@
     <dl>
       <dt>配送</dt>
       <!-- 城市地址组件 -->
-      <dd>至 <XtxCity></XtxCity></dd>
+      <dd>
+        至
+        <XtxCity
+          :fullLocation="fullLocation"
+          @selectedAttr="selectHandler"
+        ></XtxCity>
+      </dd>
     </dl>
     <dl>
       <dt>服务</dt>
@@ -28,6 +34,7 @@
 </template>
 
 <script>
+import { ref } from 'vue'
 export default {
   name: 'GoodsName',
   props: {
@@ -35,6 +42,35 @@ export default {
       type: Object,
       default: () => {}
     }
+  },
+  setup (props, { emit }) {
+    // 数据流向：goods(index.vue) ==> goods(goods-name.vue):有用户已选择的默认地址(goods.userAddresses) ==> goods.userAddresses(XtxCity) ==> 展示完整地址 fullLocation
+    // 由goods-name.vue传给XtxCity的fullLocation有两种情况：
+    // 1.未登录，默认'北京市 市辖区 东城区'
+    // 2.已登录，从goods中取数据
+
+    // 未登录
+    const provinceCode = ref('110000')
+    const cityCode = ref('119900')
+    const countyCode = ref('110101')
+    const fullLocation = ref('北京市 市辖区 东城区')
+    // 已登录 goods.userAddresses(数组)
+    if (props.goods.userAddresses) {
+      const defaultAddress = props.goods.userAddresses.find(
+        (item) => item.isDefault === 1
+      )
+      if (defaultAddress) {
+        provinceCode.value = defaultAddress.provinceCode
+        cityCode.value = defaultAddress.cityCode
+        countyCode.value = defaultAddress.countyCode
+        fullLocation.value = defaultAddress.fullLocation
+      }
+    }
+
+    const selectHandler = (data) => {
+      fullLocation.value = data.fullLocation
+    }
+    return { fullLocation, selectHandler }
   }
 }
 </script>
