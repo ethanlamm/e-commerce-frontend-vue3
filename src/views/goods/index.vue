@@ -25,6 +25,8 @@
           <GoodsName :goods="goods"></GoodsName>
           <!-- 规格选择 -->
           <GoodsSku :goods="goods" @sendSkuInfo="getSkuInfo"></GoodsSku>
+          <!-- 数量选择 -->
+          <XtxNumbox label="数量" v-model="num"></XtxNumbox>
         </div>
       </div>
       <!-- 商品推荐 -->
@@ -69,7 +71,8 @@ export default {
         goods.value.inventory = skuInfo.inventory
       }
     }
-    return { goods, getSkuInfo }
+    const num = ref(1)
+    return { goods, getSkuInfo, num }
   }
 }
 // 获取数据
