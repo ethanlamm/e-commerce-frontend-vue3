@@ -35,7 +35,6 @@ export default {
     const hotGoods = ref([])
     getHotGoods({ id: route.params.id, type: props.type }).then((data) => {
       hotGoods.value = data.result
-      console.log(hotGoods.value)
     })
     return { title, hotGoods }
   }

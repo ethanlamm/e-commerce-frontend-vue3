@@ -11,7 +11,7 @@
 
 <script>
 import { getRelGoods } from '@/api/goods'
-import { ref } from '@vue/reactivity'
+import { ref } from 'vue'
 export default {
   // 同类推荐(需要传入skuId) 或 猜你喜欢
   name: 'GoodsRelevant',
