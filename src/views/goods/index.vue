@@ -27,6 +27,8 @@
           <GoodsSku :goods="goods" @sendSkuInfo="getSkuInfo"></GoodsSku>
           <!-- 数量选择 -->
           <XtxNumbox label="数量" v-model="num"></XtxNumbox>
+          <!-- 按钮 -->
+          <XtxButton type="primary" class="button">加入购物车</XtxButton>
         </div>
       </div>
       <!-- 商品推荐 -->
@@ -112,6 +114,10 @@ const getData = () => {
   .spec {
     flex: 1;
     padding: 30px 30px 30px 0;
+
+    .button {
+      margin-top: 20px;
+    }
   }
 }
 .goods-footer {
