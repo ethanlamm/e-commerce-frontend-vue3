@@ -37,7 +37,7 @@
       <div class="goods-footer">
         <div class="goods-article">
           <!-- 商品+评价 -->
-          <div class="goods-tabs"></div>
+          <GoodsTabs></GoodsTabs>
           <!-- 注意事项 -->
           <div class="goods-warn"></div>
         </div>
@@ -57,9 +57,17 @@ import GoodsImage from './components/goods-image.vue'
 import GoodsSales from './components/goods-sales'
 import GoodsName from './components/goods-name'
 import GoodsSku from './components/goods-sku'
+import GoodsTabs from './components/goods-tabs.vue'
 export default {
   name: 'XtxGoodsPage',
-  components: { GoodsRelevant, GoodsImage, GoodsSales, GoodsName, GoodsSku },
+  components: {
+    GoodsRelevant,
+    GoodsImage,
+    GoodsSales,
+    GoodsName,
+    GoodsSku,
+    GoodsTabs
+  },
   setup (props) {
     let goods = ref(null)
     goods = getData()
