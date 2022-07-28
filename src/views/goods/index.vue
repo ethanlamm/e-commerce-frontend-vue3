@@ -24,7 +24,7 @@
           <!-- 名称信息 -->
           <GoodsName :goods="goods"></GoodsName>
           <!-- 规格选择 -->
-          <GoodsSku :goods="goods"></GoodsSku>
+          <GoodsSku :goods="goods" @sendSkuInfo="getSkuInfo"></GoodsSku>
         </div>
       </div>
       <!-- 商品推荐 -->
@@ -59,7 +59,17 @@ export default {
   setup (props) {
     let goods = ref(null)
     goods = getData()
-    return { goods }
+    // 接收sku组件选择后的sku信息
+    const getSkuInfo = (skuInfo) => {
+      // 根据已选择的sku，修改信息
+      // 有skuId，才修改
+      if (skuInfo.skuId) {
+        goods.value.price = skuInfo.price
+        goods.value.oldPrice = skuInfo.oldPrice
+        goods.value.inventory = skuInfo.inventory
+      }
+    }
+    return { goods, getSkuInfo }
   }
 }
 // 获取数据
@@ -74,7 +84,7 @@ const getData = () => {
           temp.value = null
           nextTick(() => {
             temp.value = data.result
-            // console.log(temp.value)
+            console.log(temp.value)
           })
         })
       }

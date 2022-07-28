@@ -110,7 +110,7 @@ export default {
       default: () => {}
     }
   },
-  setup (props) {
+  setup (props, { emit }) {
     //   拿到路径字典
     const pathMap = getPathMap(props.goods.skus)
     // 初始化时，渲染可点属性与不可点属性
@@ -131,6 +131,29 @@ export default {
       // 点击后，得到已选属性数组
       // console.log(getSelectedArr(props.goods.specs));
       updateStatus(props.goods.specs, pathMap)
+      // 选择完毕，则已选属性数组中不存在undefined
+      const selectedArr = getSelectedArr(props.goods.specs)
+      const isSelectedAll = selectedArr.every((item) => item)
+      if (isSelectedAll) {
+        // 选择完毕：传出完整信息 skuId price oldPrice inventory specsText(已选属性的字符串拼接)
+        // 1.根据已选属性数组(作为key)到路径字典中找到skuId
+        const skuIdArr = pathMap[selectedArr.join(spliter)]
+        // 2.根据skuId到skus中找到该sku
+        const sku = props.goods.skus.find((item) => item.id === skuIdArr[0])
+        // 3.整理sku信息，传出数据
+        emit('sendSkuInfo', {
+          skuId: sku.id,
+          price: sku.price,
+          oldPrice: sku.oldPrice,
+          inventory: sku.inventory,
+          specsText: sku.specs
+            .reduce((p, c) => `${p} ${c.name}:${c.valueName}`, '')
+            .trim()
+        })
+      } else {
+        // 未选择完毕：传出空对象
+        emit('sendSkuInfo', {})
+      }
     }
 
     return { selectSkuValue }
