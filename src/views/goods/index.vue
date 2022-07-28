@@ -52,7 +52,7 @@
 </template>
 
 <script>
-import { nextTick, ref, watch } from 'vue'
+import { nextTick, provide, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { getGoods } from '@/api/goods'
 import GoodsRelevant from './components/goods-relevant'
@@ -76,6 +76,10 @@ export default {
   setup (props) {
     let goods = ref(null)
     goods = getData()
+
+    // 祖先组件提供数据供后代组件使用
+    provide('goods', goods)
+
     // 接收sku组件选择后的sku信息
     const getSkuInfo = (skuInfo) => {
       // 根据已选择的sku，修改信息
