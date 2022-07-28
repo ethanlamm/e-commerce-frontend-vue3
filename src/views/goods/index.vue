@@ -39,7 +39,9 @@
           <!-- 商品+评价 -->
           <GoodsTabs></GoodsTabs>
           <!-- 注意事项 -->
-          <div class="goods-warn"></div>
+          <div class="goods-warn">
+            <GoodsWarn></GoodsWarn>
+          </div>
         </div>
         <!-- 24热榜+周榜 -->
         <div class="goods-aside">
@@ -62,6 +64,7 @@ import GoodsName from './components/goods-name'
 import GoodsSku from './components/goods-sku'
 import GoodsTabs from './components/goods-tabs.vue'
 import GoodsHot from './components/goods-hot.vue'
+import GoodsWarn from './components/goods-warn.vue'
 export default {
   name: 'XtxGoodsPage',
   components: {
@@ -71,7 +74,8 @@ export default {
     GoodsName,
     GoodsSku,
     GoodsTabs,
-    GoodsHot
+    GoodsHot,
+    GoodsWarn
   },
   setup (props) {
     let goods = ref(null)
