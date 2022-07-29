@@ -52,6 +52,7 @@ export default {
     // 1.中间连续页码数
     const consecutive = ref(props.consecutive)
     // 2.当前页码数
+    // 注意：组件内定义的变量不能和传入(props)的变量名相同！！
     const myCurrPage = ref(props.currPage)
     // 3.总数据条数
     const totalData = ref(props.totalData)
