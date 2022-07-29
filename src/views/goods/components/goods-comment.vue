@@ -69,6 +69,8 @@
             <span class="attr">{{ formatSpecs(item.orderInfo.specs) }}</span>
           </div>
           <div class="text">{{ item.content }}</div>
+          <!-- 图片组件 -->
+          <GoodsCommentImage :pictures="item.pictures"></GoodsCommentImage>
           <div class="time">
             <span>{{ item.createTime }}</span>
             <span class="zan">
@@ -85,8 +87,10 @@
 import { reactive, ref, watch } from 'vue'
 import { getCommentInfoByGoods, getListInfoByGoods } from '@/api/goods'
 import { useRoute } from 'vue-router'
+import GoodsCommentImage from './goods-comment-image.vue'
 export default {
   name: 'GoodsComment',
+  components: { GoodsCommentImage },
   setup (props) {
     // 评价的头部信息
     const commentInfo = ref({})
@@ -121,7 +125,6 @@ export default {
       () => {
         getListInfoByGoods(route.params.id).then((data) => {
           listInfo.value = data.result.items
-          console.log(listInfo.value)
         })
       },
       { immediate: true }
