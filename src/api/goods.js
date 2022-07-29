@@ -42,7 +42,7 @@ export const getCommentInfoByGoods = (id) => {
  * 获取商品的评价列表数据
  * @param {String} id - 商品ID
  */
-export const getListInfoByGoods = (id) => {
+export const getListInfoByGoods = (id, params) => {
   // return request(`/goods/${id}/evaluate`, 'get')
-  return request(`https://mock.boxuegu.com/mock/1175/goods/${id}/evaluate/page`, 'get')
+  return request(`https://mock.boxuegu.com/mock/1175/goods/${id}/evaluate/page`, 'get', params)
 }

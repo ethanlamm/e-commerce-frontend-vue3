@@ -81,6 +81,14 @@
         </div>
       </div>
     </div>
+    <!-- 分页器 -->
+    <XtxPagination
+      @pageChange="pageChangeHandler"
+      v-if="listInfo.length"
+      :totalData="totalData"
+      :pageSize="reqParams.pageSize"
+      :currPage="reqParams.page"
+    ></XtxPagination>
   </div>
 </template>
 <script>
@@ -115,16 +123,18 @@ export default {
       // 当hasPicture、tag为null，即不携带这两个字段时，则请求'全部评价'数据
       hasPicture: null, // 为true时，请求'有图'数据
       tag: null, // 为title(String)时，请求该tag数据
-      sortField: null // 默认 null | 最新 createTime | 最热 praiseCount
+      sortField: null // 排序 默认 null | 最新 createTime | 最热 praiseCount
     })
 
     // 列表信息
     const listInfo = ref({})
+    const totalData = ref(0)
     watch(
       reqParams,
-      () => {
-        getListInfoByGoods(route.params.id).then((data) => {
+      (newValue) => {
+        getListInfoByGoods(route.params.id, newValue).then((data) => {
           listInfo.value = data.result.items
+          totalData.value = data.result.counts
         })
       },
       { immediate: true }
@@ -141,7 +151,7 @@ export default {
       return nickname.substr(0, 1) + '****' + nickname.substr(-1)
     }
 
-    // 点击tag，修改请求参数
+    // tag改变，修改请求参数
     const currIndex = ref(0)
     const changeTag = (i) => {
       currIndex.value = i
@@ -161,12 +171,18 @@ export default {
         reqParams.tag = tag.title
       }
       reqParams.page = 1
+      reqParams.sortField = null
     }
 
     // 排序改变，修改请求参数
     const changSort = (type) => {
       reqParams.sortField = type
       reqParams.page = 1
+    }
+
+    // 页码改变，再次请求数据
+    const pageChangeHandler = (newPage) => {
+      reqParams.page = newPage
     }
 
     return {
@@ -177,7 +193,9 @@ export default {
       changSort,
       listInfo,
       formatSpecs,
-      formatNickname
+      formatNickname,
+      totalData,
+      pageChangeHandler
     }
   }
 }
