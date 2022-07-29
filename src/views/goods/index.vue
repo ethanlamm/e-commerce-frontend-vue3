@@ -110,7 +110,6 @@ const getData = () => {
           temp.value = null
           nextTick(() => {
             temp.value = data.result
-            console.log(temp.value)
           })
         })
       }
