@@ -3,9 +3,26 @@
   <section class="login-section">
     <div class="wrapper">
       <nav>
-        <a href="javascript:;">账户登录</a>
-        <a href="javascript:;">扫码登录</a>
+        <a
+          href="javascript:;"
+          @click="activeName = 'account'"
+          :class="{ active: activeName === 'account' }"
+          >账户登录</a
+        >
+        <a
+          href="javascript:;"
+          @click="activeName = 'qrcode'"
+          :class="{ active: activeName === 'qrcode' }"
+          >扫码登录</a
+        >
       </nav>
+      <!-- 表单 -->
+      <LoginForm v-if="activeName === 'account'"></LoginForm>
+      <!-- 二维码 -->
+      <div v-if="activeName === 'qrcode'" class="qrcode-box">
+        <img src="@/assets/images/qrcode.jpg" alt="" />
+        <p>打开 <a href="javascript:;">小兔鲜App</a> 扫码登录</p>
+      </div>
     </div>
   </section>
   <LoginFooter></LoginFooter>
@@ -14,9 +31,17 @@
 <script>
 import LoginHeader from './components/login-header.vue'
 import LoginFooter from './components/login-footer.vue'
+import LoginForm from './components/login-form.vue'
+import { ref } from 'vue'
 export default {
   name: 'LoginVue',
-  components: { LoginHeader, LoginFooter }
+  components: { LoginHeader, LoginFooter, LoginForm },
+  setup (props) {
+    // 登录模式切换
+    const activeName = ref('account')
+
+    return { activeName }
+  }
 }
 </script>
 
@@ -56,6 +81,18 @@ export default {
           font-weight: bold;
         }
       }
+    }
+  }
+}
+// 二维码容器
+.qrcode-box {
+  text-align: center;
+  padding-top: 40px;
+  p {
+    margin-top: 20px;
+    a {
+      color: @xtxColor;
+      font-size: 16px;
     }
   }
 }
