@@ -8,19 +8,41 @@
         <i class="iconfont icon-msg"></i> 使用短信登录
       </a>
     </div>
-    <div class="form">
+    <Form
+      ref="FormCom"
+      class="form"
+      :validation-schema="myScheme"
+      v-slot="{ errors }"
+    >
       <template v-if="!isMsgLogin">
         <div class="form-item">
           <div class="input">
             <i class="iconfont icon-user"></i>
-            <input type="text" placeholder="请输入用户名" />
+            <Field
+              name="account"
+              v-model="form.account"
+              type="text"
+              placeholder="请输入用户名"
+              :class="{ error: errors.account }"
+            />
           </div>
-          <!-- <div class="error"><i class="iconfont icon-warning" />请输入手机号</div> -->
+          <div class="error" v-if="errors.account">
+            <i class="iconfont icon-warning" />{{ errors.account }}
+          </div>
         </div>
         <div class="form-item">
           <div class="input">
             <i class="iconfont icon-lock"></i>
-            <input type="password" placeholder="请输入密码" />
+            <Field
+              name="password"
+              v-model="form.password"
+              type="password"
+              placeholder="请输入密码"
+              :class="{ error: errors.password }"
+            />
+          </div>
+          <div class="error" v-if="errors.password">
+            <i class="iconfont icon-warning" />{{ errors.password }}
           </div>
         </div>
       </template>
@@ -28,28 +50,49 @@
         <div class="form-item">
           <div class="input">
             <i class="iconfont icon-user"></i>
-            <input type="text" placeholder="请输入手机号" />
+            <Field
+              name="mobile"
+              v-model="form.mobile"
+              type="text"
+              placeholder="请输入手机号"
+              :class="{ error: errors.mobile }"
+            />
+          </div>
+          <div class="error" v-if="errors.mobile">
+            <i class="iconfont icon-warning" />{{ errors.mobile }}
           </div>
         </div>
         <div class="form-item">
           <div class="input">
             <i class="iconfont icon-code"></i>
-            <input type="password" placeholder="请输入验证码" />
+            <Field
+              name="code"
+              v-model="form.code"
+              type="text"
+              placeholder="请输入验证码"
+              :class="{ error: errors.code }"
+            />
             <span class="code">发送验证码</span>
+          </div>
+          <div class="error" v-if="errors.code">
+            <i class="iconfont icon-warning" />{{ errors.code }}
           </div>
         </div>
       </template>
       <div class="form-item">
         <div class="agree">
-          <XtxCheckbox v-model="form.isAgree" />
+          <Field as="XtxCheckbox" name="isAgree" v-model="form.isAgree" />
           <span>我已同意</span>
           <a href="javascript:;">《隐私条款》</a>
           <span>和</span>
           <a href="javascript:;">《服务条款》</a>
         </div>
+        <div class="error" v-if="errors.isAgree">
+          <i class="iconfont icon-warning" />{{ errors.isAgree }}
+        </div>
       </div>
-      <a href="javascript:;" class="btn">登录</a>
-    </div>
+      <a href="javascript:;" class="btn" @click="login">登录</a>
+    </Form>
     <div class="action">
       <img
         src="https://qzonestyle.gtimg.cn/qzone/vas/opensns/res/img/Connect_logo_7.png"
@@ -63,17 +106,61 @@
 </template>
 
 <script>
-import { ref, reactive } from 'vue'
+import { ref, reactive, watch } from 'vue'
+import { Form, Field } from 'vee-validate'
+import schema from '@/utils/vee-validate-schema'
 export default {
   name: 'LoginForm',
+  components: { Form, Field },
   setup (props) {
     // 默认账号密码登录
     const isMsgLogin = ref(false)
-    // 收集表单数据
+
+    // 表单验证
+    // 1.npm i vee-validate@4.0.3
+    // 2.引入 Form、Field，并注册!!!!
+    // 3.Form 替换 form 标签、Field 替换 input 标签(若是自定义组件，则加上 as="组件名称"，前提条件 自定义组件须支持v-model)
+    // 4.每个 Field 有对应的 name 指定相应的验证函数，同时需要双向数据绑定
+    // 5.定义 Form 验证规则(对象)，引入并在 Form 的validation-schema绑定
+    // 6.在 Form 中添加 v-slot="{errors}"，通过 errors.验证规则名称 取出错误信息进行展示
+    // 双向绑定表单数据
     const form = reactive({
-      isAgree: true
+      isAgree: true,
+      account: null,
+      password: null,
+      mobile: null,
+      code: null
     })
-    return { isMsgLogin, form }
+
+    // 接收校验规则，并提供给模板使用
+    const myScheme = {
+      account: schema.account,
+      password: schema.password,
+      mobile: schema.mobile,
+      code: schema.code,
+      isAgree: schema.isAgree
+    }
+
+    // 切换登录模式，清除之前的数据以及校验结果
+    // 清除校验结果：Form 组件提供 resetForm 方法
+    const FormCom = ref(null)
+    watch(isMsgLogin, () => {
+      // 清除数据
+      form.isAgree = true
+      form.account = null
+      form.password = null
+      form.mobile = null
+      form.code = null
+      // v-show 没有销毁组件，则需要清除校验结果，而 v-if 会销毁组件，则不需要清除校验结果
+      FormCom.value.resetForm()
+    })
+
+    // 点击登录按钮，整体验证 Form 组件提供 validate 方法，返回 Promise
+    const login = async () => {
+      const result = await FormCom.value.validate()
+      console.log(result)
+    }
+    return { isMsgLogin, form, myScheme, FormCom, login }
   }
 }
 </script>
