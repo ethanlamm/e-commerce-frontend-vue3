@@ -5,11 +5,11 @@ import createPersistedstate from 'vuex-persistedstate'
 // 引入其他仓库
 import cart from './modules/cart'
 import category from './modules/category'
-import uer from './modules/user'
+import user from './modules/user'
 
 export default createStore({
   modules: {
-    cart, category, uer
+    cart, category, user
   },
   plugins: [
     createPersistedstate({

@@ -106,14 +106,21 @@
 </template>
 
 <script>
-import { ref, reactive, watch, getCurrentInstance } from 'vue'
+import { ref, reactive, watch } from 'vue'
 import { Form, Field } from 'vee-validate'
 import schema from '@/utils/vee-validate-schema'
 import Message from '@/components/library/message'
+import { accountLogin } from '@/api/user'
+import { useStore } from 'vuex'
+import { useRoute, useRouter } from 'vue-router'
 export default {
   name: 'LoginForm',
   components: { Form, Field },
   setup (props) {
+    const store = useStore()
+    const router = useRouter()
+    const route = useRoute()
+
     // 默认账号密码登录
     const isMsgLogin = ref(false)
 
@@ -153,28 +160,46 @@ export default {
       form.mobile = null
       form.code = null
       // v-show 没有销毁组件，则需要清除校验结果，而 v-if 会销毁组件，则不需要清除校验结果
-      FormCom.value.resetForm()
+      // FormCom.value.resetForm();
     })
-
-    // 获取组件实例
-    const { proxy } = getCurrentInstance()
 
     // 点击登录按钮，整体验证 Form 组件提供 validate 方法，返回 Promise
     const login = async () => {
       const result = await FormCom.value.validate()
-      console.log(result)
 
-      // 1.通过引入函数形式使用消息提示
-      Message('登陆错误', 'error')
-      // 2.通过实例形式使用消息提示(在组合式API中使用)
-      proxy.$message('成功', 'success')
+      // 如果验证通过
+      if (result) {
+        // 1.收集表单数据，发请求
+        // 2.请求成功，存储返回的用户信息，消息提示登录成功，路由跳转(重定向|首页)
+        // 3.请求失败，消息提示失败内容
+        const { account, password } = form
+        accountLogin({ account, password })
+          .then((data) => {
+            const { id, avatar, nickname, account, mobile, token } =
+              data.result
+            // 存储数据
+            store.commit('user/setUser', {
+              id,
+              avatar,
+              nickname,
+              account,
+              mobile,
+              token
+            })
+            // 路由跳转
+            const redirectUrl = route.query.redirectUrl
+            router.push(redirectUrl || '/')
+            // 提示成功
+            Message('登录成功', 'success')
+          })
+          .catch((err) => {
+            if (err.response) {
+              Message(err.response.data.message || '登录失败', 'error')
+            }
+          })
+      }
     }
     return { isMsgLogin, form, myScheme, FormCom, login }
-  },
-  // 3.通过vue原型使用消息提示，需要this
-  created () {
-    // vue2.0使用方式
-    this.$message('警告测试')
   }
 }
 </script>
