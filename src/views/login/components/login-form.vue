@@ -106,10 +106,10 @@
 </template>
 
 <script>
-import { ref, reactive, watch } from 'vue'
+import { ref, reactive, watch, getCurrentInstance } from 'vue'
 import { Form, Field } from 'vee-validate'
 import schema from '@/utils/vee-validate-schema'
-
+import Message from '@/components/library/message'
 export default {
   name: 'LoginForm',
   components: { Form, Field },
@@ -156,12 +156,25 @@ export default {
       FormCom.value.resetForm()
     })
 
+    // 获取组件实例
+    const { proxy } = getCurrentInstance()
+
     // 点击登录按钮，整体验证 Form 组件提供 validate 方法，返回 Promise
     const login = async () => {
       const result = await FormCom.value.validate()
       console.log(result)
+
+      // 1.通过引入函数形式使用消息提示
+      Message('登陆错误', 'error')
+      // 2.通过实例形式使用消息提示(在组合式API中使用)
+      proxy.$message('成功', 'success')
     }
     return { isMsgLogin, form, myScheme, FormCom, login }
+  },
+  // 3.通过vue原型使用消息提示，需要this
+  created () {
+    // vue2.0使用方式
+    this.$message('警告测试')
   }
 }
 </script>
