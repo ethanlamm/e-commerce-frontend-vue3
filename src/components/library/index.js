@@ -7,6 +7,9 @@
 // 默认图片
 import defaultImg from '@/assets/images/200.png'
 
+// 消息函数
+import Message from './message'
+
 // import XtxSkeleton from './xtx-skeleton.vue'
 // import XtsCarousel from './xtx-carousel.vue'
 // import XtxMore from './xtx-more.vue'
@@ -76,8 +79,11 @@ export default {
       app.component(component.name, component)
     })
 
-
+    // 自定义指令
     defineDirective(app)
+
+    // 消息提示挂载至原型上 app.config.globalProperties
+    app.config.globalProperties.$message = Message
   }
 }
 // 导出后，在main.js使用

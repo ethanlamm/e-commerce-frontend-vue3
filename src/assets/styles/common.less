@@ -169,3 +169,22 @@ ul {
     opacity: 1;
     transform: none;
 }
+
+// 消息提示动画
+.down {
+    &-enter {
+        &-from {
+            transform: translate3d(0, -75px, 0);
+            opacity: 0;
+        }
+
+        &-active {
+            transition: all 0.5s;
+        }
+
+        &-to {
+            transform: none;
+            opacity: 1;
+        }
+    }
+}
