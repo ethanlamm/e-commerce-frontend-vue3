@@ -14,6 +14,7 @@
       :validation-schema="myScheme"
       v-slot="{ errors }"
     >
+      <!-- 用户名密码登录 -->
       <template v-if="!isMsgLogin">
         <div class="form-item">
           <div class="input">
@@ -46,6 +47,7 @@
           </div>
         </div>
       </template>
+      <!-- 手机号登录 -->
       <template v-else>
         <div class="form-item">
           <div class="input">
@@ -72,7 +74,13 @@
               placeholder="请输入验证码"
               :class="{ error: errors.code }"
             />
-            <span class="code">发送验证码</span>
+            <span
+              class="code"
+              @click="sendCode"
+              :class="{ disabled: time !== 0 }"
+            >
+              {{ time === 0 ? "发送验证码" : `${time} 秒后重新发送` }}
+            </span>
           </div>
           <div class="error" v-if="errors.code">
             <i class="iconfont icon-warning" />{{ errors.code }}
@@ -106,13 +114,14 @@
 </template>
 
 <script>
-import { ref, reactive, watch } from 'vue'
+import { ref, reactive, watch, onUnmounted } from 'vue'
 import { Form, Field } from 'vee-validate'
 import schema from '@/utils/vee-validate-schema'
 import Message from '@/components/library/message'
-import { accountLogin } from '@/api/user'
+import { userAccountLogin, userMobileLoginMsg } from '@/api/user'
 import { useStore } from 'vuex'
 import { useRoute, useRouter } from 'vue-router'
+import { useIntervalFn } from '@vueuse/core'
 export default {
   name: 'LoginForm',
   components: { Form, Field },
@@ -151,7 +160,7 @@ export default {
 
     // 切换登录模式，清除之前的数据以及校验结果
     // 清除校验结果：Form 组件提供 resetForm 方法
-    const FormCom = ref(null)
+    const FormCom = ref(null) // Form 组件
     watch(isMsgLogin, () => {
       // 清除数据
       form.isAgree = true
@@ -169,37 +178,93 @@ export default {
 
       // 如果验证通过
       if (result) {
-        // 1.收集表单数据，发请求
-        // 2.请求成功，存储返回的用户信息，消息提示登录成功，路由跳转(重定向|首页)
-        // 3.请求失败，消息提示失败内容
-        const { account, password } = form
-        accountLogin({ account, password })
-          .then((data) => {
-            const { id, avatar, nickname, account, mobile, token } =
-              data.result
-            // 存储数据
-            store.commit('user/setUser', {
-              id,
-              avatar,
-              nickname,
-              account,
-              mobile,
-              token
+        if (!isMsgLogin.value) {
+          // 用户名登录
+          // 1.收集表单数据，发请求
+          // 2.请求成功，存储返回的用户信息，消息提示登录成功，路由跳转(重定向|首页)
+          // 3.请求失败，消息提示失败内容
+          const { account, password } = form
+          userAccountLogin({ account, password })
+            .then((data) => {
+              const { id, avatar, nickname, account, mobile, token } =
+                data.result
+              // 存储数据
+              store.commit('user/setUser', {
+                id,
+                avatar,
+                nickname,
+                account,
+                mobile,
+                token
+              })
+              // 路由跳转
+              const redirectUrl = route.query.redirectUrl
+              router.push(redirectUrl || '/')
+              // 提示成功
+              Message('登录成功', 'success')
             })
-            // 路由跳转
-            const redirectUrl = route.query.redirectUrl
-            router.push(redirectUrl || '/')
-            // 提示成功
-            Message('登录成功', 'success')
-          })
-          .catch((err) => {
-            if (err.response) {
-              Message(err.response.data.message || '登录失败', 'error')
-            }
-          })
+            .catch((err) => {
+              if (err.response) {
+                Message(err.response.data.message || '登录失败', 'error')
+              }
+            })
+        } else {
+          // 手机号登录
+          // 1.收集手机号，验证是否合法
+          // 2.发请求(验证码)，60秒倒计时
+          // 3.收集表单数据，验证是否合法
+          // 4.再次发请求(手机号、验证码)
+          // 5.请求成功，存储返回的用户信息，消息提示登录成功，路由跳转(重定向|首页)
+          // 6.请求失败，消息提示失败内容
+        }
       }
     }
-    return { isMsgLogin, form, myScheme, FormCom, login }
+
+    // 倒计时
+    const time = ref(0)
+    // pause 停止定时器 | resume 开启定时器
+    // useIntervalFn(间隔时间的回调，间隔时间，是否立即开启定时器)
+    const { pause, resume } = useIntervalFn(
+      () => {
+        time.value--
+        if (time.value <= 0) {
+          pause()
+        }
+      },
+      1000,
+      { immediate: false }
+    )
+    // 组件销毁时，停止定时器
+    onUnmounted(() => {
+      pause()
+    })
+
+    // 点击发送验证码按钮回调
+    const sendCode = async () => {
+      // 1.收集手机号，验证手机号是否合法
+      // 2.发请求(验证码)，60秒倒计时
+      // 3.60秒内不能再次请求
+      const vaild = myScheme.mobile(form.mobile) // 验证通过 true | 验证不通过 字符串(错误提示)
+      if (vaild === true) {
+        // 验证通过
+        // 但倒计时为0时，才发请求
+        if (time.value === 0) {
+          // 发请求，验证码
+          await userMobileLoginMsg(form.mobile) // 无返回值
+          // 验证码请求成功，开启倒计时
+          time.value = 60
+          resume()
+        } else {
+          return Message('消息已发送，请注意查收')
+        }
+      } else {
+        // 验证不通过，通过vee的错误函数提示错误信息
+        // setFieldError(错误字段，错误信息)
+        FormCom.value.setFieldError('mobile', vaild)
+      }
+    }
+
+    return { isMsgLogin, form, myScheme, FormCom, login, sendCode, time }
   }
 }
 </script>
@@ -259,9 +324,17 @@ export default {
           font-size: 14px;
           background: #f5f5f5;
           color: #666;
-          width: 90px;
+          width: 120px;
           height: 34px;
           cursor: pointer;
+          // 禁用
+          &.disabled {
+            cursor: not-allowed;
+            opacity: 0.4;
+            &:hover {
+              color: #333;
+            }
+          }
         }
       }
       > .error {
