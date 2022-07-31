@@ -118,7 +118,11 @@ import { ref, reactive, watch, onUnmounted } from 'vue'
 import { Form, Field } from 'vee-validate'
 import schema from '@/utils/vee-validate-schema'
 import Message from '@/components/library/message'
-import { userAccountLogin, userMobileLoginMsg } from '@/api/user'
+import {
+  userAccountLogin,
+  userMobileLoginMsg,
+  userMobileLogin
+} from '@/api/user'
 import { useStore } from 'vuex'
 import { useRoute, useRouter } from 'vue-router'
 import { useIntervalFn } from '@vueuse/core'
@@ -178,44 +182,47 @@ export default {
 
       // 如果验证通过
       if (result) {
-        if (!isMsgLogin.value) {
-          // 用户名登录
-          // 1.收集表单数据，发请求
-          // 2.请求成功，存储返回的用户信息，消息提示登录成功，路由跳转(重定向|首页)
-          // 3.请求失败，消息提示失败内容
-          const { account, password } = form
-          userAccountLogin({ account, password })
-            .then((data) => {
-              const { id, avatar, nickname, account, mobile, token } =
-                data.result
-              // 存储数据
-              store.commit('user/setUser', {
-                id,
-                avatar,
-                nickname,
-                account,
-                mobile,
-                token
-              })
-              // 路由跳转
-              const redirectUrl = route.query.redirectUrl
-              router.push(redirectUrl || '/')
-              // 提示成功
-              Message('登录成功', 'success')
-            })
-            .catch((err) => {
-              if (err.response) {
-                Message(err.response.data.message || '登录失败', 'error')
-              }
-            })
-        } else {
-          // 手机号登录
-          // 1.收集手机号，验证是否合法
-          // 2.发请求(验证码)，60秒倒计时
-          // 3.收集表单数据，验证是否合法
-          // 4.再次发请求(手机号、验证码)
-          // 5.请求成功，存储返回的用户信息，消息提示登录成功，路由跳转(重定向|首页)
-          // 6.请求失败，消息提示失败内容
+        let data = null
+        try {
+          if (!isMsgLogin.value) {
+            // 用户名登录
+            // 1.收集表单数据，发请求
+            // 2.请求成功，存储返回的用户信息，消息提示登录成功，路由跳转(重定向|首页)
+            // 3.请求失败，消息提示失败内容
+            const { account, password } = form
+            data = await userAccountLogin({ account, password })
+          } else {
+            // 手机号登录
+            // 1.收集手机号，验证是否合法
+            // 2.发请求(验证码)，60秒倒计时
+            // 3.收集表单数据，验证是否合法
+            // 4.再次发请求(手机号、验证码)
+            // 5.请求成功，存储返回的用户信息，消息提示登录成功，路由跳转(重定向|首页)
+            // 6.请求失败，消息提示失败内容
+            const { mobile, code } = form
+            data = await userMobileLogin({ mobile, code })
+          }
+          // 请求成功
+          const { id, avatar, nickname, account, mobile, token } = data.result
+          // 存储数据
+          store.commit('user/setUser', {
+            id,
+            avatar,
+            nickname,
+            account,
+            mobile,
+            token
+          })
+          // 路由跳转
+          const redirectUrl = route.query.redirectUrl
+          router.push(redirectUrl || '/')
+          // 提示成功
+          Message('登录成功', 'success')
+        } catch (err) {
+          // 请求失败
+          if (err.response) {
+            Message(err.response.data.message || '登录失败', 'error')
+          }
         }
       }
     }
@@ -250,12 +257,12 @@ export default {
         // 但倒计时为0时，才发请求
         if (time.value === 0) {
           // 发请求，验证码
-          await userMobileLoginMsg(form.mobile) // 无返回值
+          await userMobileLoginMsg(form.mobile) // 无返回值，默认123456
           // 验证码请求成功，开启倒计时
           time.value = 60
           resume()
         } else {
-          return Message('消息已发送，请注意查收')
+          return Message('验证码已发送，请注意查收')
         }
       } else {
         // 验证不通过，通过vee的错误函数提示错误信息
