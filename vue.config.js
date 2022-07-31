@@ -35,9 +35,19 @@ module.exports = defineConfig({
   devServer: {
     historyApiFallback: true,
     allowedHosts: 'all'
-  }
+  },
   // 旧写法，disableHostCheck已被弃用
   // chainWebpack: config => {
   //   config.devServer.disableHostCheck(true)
   // }
+
+  // 这个是设置外部扩展，模块为qc,变量名为QC，导入qc将不做打包。
+  // 因为qq登录的js库是通过script标签引入(public/index.html)的，不是通过npm下载的
+  // 引入QC时(import QC from 'qc')，由于没有qc这个包，所以会报错
+  // 因此将qc排除
+  configureWebpack: {
+    externals: {
+      qc: 'QC'
+    }
+  }
 })

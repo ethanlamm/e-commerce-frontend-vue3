@@ -102,9 +102,15 @@
       <a href="javascript:;" class="btn" @click="login">登录</a>
     </Form>
     <div class="action">
-      <img
-        src="https://qzonestyle.gtimg.cn/qzone/vas/opensns/res/img/Connect_logo_7.png"
-      />
+      <!-- 配置的目的是得到一个QQ登录地址，得到后span无用 -->
+      <!-- <span id="qqLoginBtn"></span> -->
+      <a
+        href="https://graph.qq.com/oauth2.0/authorize?client_id=100556005&response_type=token&scope=all&redirect_uri=http%3A%2F%2Fwww.corho.com%3A8080%2F%23%2Flogin%2Fcallback"
+      >
+        <img
+          src="https://qzonestyle.gtimg.cn/qzone/vas/opensns/res/img/Connect_logo_7.png"
+        />
+      </a>
       <div class="url">
         <a href="javascript:;">忘记密码</a>
         <a href="javascript:;">免费注册</a>
@@ -126,6 +132,8 @@ import {
 import { useStore } from 'vuex'
 import { useRoute, useRouter } from 'vue-router'
 import { useIntervalFn } from '@vueuse/core'
+// 引入QC
+// import QC from "qc";
 export default {
   name: 'LoginForm',
   components: { Form, Field },
@@ -271,6 +279,16 @@ export default {
       }
     }
 
+    // 初始化QQ登录按钮(官方)---配置后无用
+    // 1.准备一个 span，有id=qqLoginBtn
+    // 2.QC.Login({btnId:'qqLoginBtn'})
+    // onMounted(() => {
+    //   QC.Login({ btnId: "qqLoginBtn" });
+    // });
+    // ★★ 注意 ★★
+    // 配置的目的是得到一个QQ登录地址
+    // 默认是新开一个窗口进行登录(window.open)
+    // 可将地址复制去出，赋值给a链接，即可实现在同一窗口进行交互
     return { isMsgLogin, form, myScheme, FormCom, login, sendCode, time }
   }
 }
