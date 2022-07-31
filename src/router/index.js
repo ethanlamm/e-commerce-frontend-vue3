@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
 
 
 const routes = [
@@ -37,7 +37,8 @@ const routes = [
 ]
 
 const router = createRouter({
-  history: createWebHistory(process.env.BASE_URL),
+  // 使用hash模式：QQ登录后重跳转的url是使用hash模式的
+  history: createWebHashHistory(process.env.BASE_URL),
   routes,
   // 每次切换路由滚动到页面顶部
   // vue2.0 x，y

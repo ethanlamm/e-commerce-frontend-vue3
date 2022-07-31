@@ -33,8 +33,8 @@ module.exports = defineConfig({
   // 2.需要开启IP或域名访问webpack服务器权限
   // 新写法
   devServer: {
-    historyApiFallback: true,
-    allowedHosts: 'all'
+    historyApiFallback: true, // 这是任何404或无响应页，重跳转至 index.html
+    allowedHosts: ['www.corho.com'] // 内网映射设置
   },
   // 旧写法，disableHostCheck已被弃用
   // chainWebpack: config => {
