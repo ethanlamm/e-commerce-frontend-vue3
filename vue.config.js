@@ -12,7 +12,7 @@ module.exports = defineConfig({
         path.join(__dirname, './src/assets/styles/mixins.less')
       ]
     }
-  }
+  },
 
   // vue-cli创建的webpack模板默认将10kb下的图片打包成base64的格式!!!!!!!
 
@@ -24,5 +24,20 @@ module.exports = defineConfig({
   //     .use('url-loader')
   //     .loader('url-loader')
   //     .tap(options => Object.assign(options, { limit: 10000 }))
+  // }
+
+  // qq登录：webpack-dev-server开启可IP和域名访问权限。
+  // 1.需要在本地修改hosts地址
+  // 1.1找到 C: \Windows\System32\drivers\etc 下hosts文件
+  // 1.2在文件中加入  127.0.0.1 www.corho.com，保存
+  // 2.需要开启IP或域名访问webpack服务器权限
+  // 新写法
+  devServer: {
+    historyApiFallback: true,
+    allowedHosts: 'all'
+  }
+  // 旧写法，disableHostCheck已被弃用
+  // chainWebpack: config => {
+  //   config.devServer.disableHostCheck(true)
   // }
 })
