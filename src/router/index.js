@@ -27,6 +27,11 @@ const routes = [
   {
     path: '/login',
     component: () => import('@/views/login')
+  },
+  {
+    // 该地址与在index.html中的data - redirecturi应保持一致
+    path: '/login/callback',
+    component: () => import('@/views/login/callback')
   }
 
 ]
