@@ -7,7 +7,8 @@ export default {
       nickname: '',
       account: '',
       mobile: '',
-      token: ''
+      token: '',
+      redirectUrl: '/'
     }
   },
 
@@ -18,6 +19,9 @@ export default {
   mutations: {
     setUser (state, data) {
       state.profile = data
+    },
+    setRedirectUrl (state, data) {
+      state.redirectUrl = data
     }
   }
 }
