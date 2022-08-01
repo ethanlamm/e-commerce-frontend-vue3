@@ -25,10 +25,10 @@
       </a>
     </nav>
     <div class="tab-content" v-if="hasAccount">
-      <CallbackBind></CallbackBind>
+      <CallbackBind :unionId="unionId"></CallbackBind>
     </div>
     <div class="tab-content" v-else>
-      <CallbackPatch></CallbackPatch>
+      <CallbackPatch :unionId="unionId"></CallbackPatch>
     </div>
   </section>
   <LoginFooter></LoginFooter>
@@ -56,6 +56,8 @@ export default {
     const hasAccount = ref(true)
     // loading图
     const isBind = ref(true)
+    // unionId
+    const unionId = ref(null)
 
     // 1.QQ登录后，跳转至 /login/callback 页面，即当前页面
     // 2.初始化时(setup)获取openId
@@ -66,6 +68,7 @@ export default {
     // 确保已登录
     if (QC.Login.check()) {
       QC.Login.getMe((openId) => {
+        unionId.value = openId
         userQQLogin(openId)
           .then((data) => {
             // 存储用户信息
@@ -95,7 +98,7 @@ export default {
       })
     }
 
-    return { hasAccount, isBind }
+    return { hasAccount, isBind, unionId }
   }
 }
 </script>
