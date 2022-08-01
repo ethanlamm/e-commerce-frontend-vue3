@@ -130,12 +130,18 @@ export default {
         // 验证通过
         // 但倒计时为0时，才发请求
         if (time.value === 0) {
-          // 发请求，验证码
-          await userQQBindCode(form.mobile) // 无返回值，默认123456
-          // 验证码请求成功，开启倒计时
-          time.value = 60
-          resume()
-          Message('发送成功', 'success')
+          try {
+            // 发请求，验证码
+            await userQQBindCode(form.mobile) // 无返回值，默认123456
+            // 验证码请求成功，开启倒计时
+            time.value = 60
+            resume()
+            Message('发送成功', 'success')
+          } catch (error) {
+            if (error.response) {
+              Message(error.response.data.message, 'error')
+            }
+          }
         } else {
           return Message('验证码已发送，请注意查收')
         }

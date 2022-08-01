@@ -11,7 +11,7 @@
     <Form
       ref="FormCom"
       class="form"
-      :validation-schema="myScheme"
+      :validation-schema="mySchema"
       v-slot="{ errors }"
     >
       <!-- 用户名密码登录 -->
@@ -162,7 +162,7 @@ export default {
     })
 
     // 接收校验规则，并提供给模板使用
-    const myScheme = {
+    const mySchema = {
       account: schema.account,
       password: schema.password,
       mobile: schema.mobile,
@@ -259,16 +259,23 @@ export default {
       // 1.收集手机号，验证手机号是否合法
       // 2.发请求(验证码)，60秒倒计时
       // 3.60秒内不能再次请求
-      const vaild = myScheme.mobile(form.mobile) // 验证通过 true | 验证不通过 字符串(错误提示)
+      const vaild = mySchema.mobile(form.mobile) // 验证通过 true | 验证不通过 字符串(错误提示)
       if (vaild === true) {
         // 验证通过
         // 但倒计时为0时，才发请求
         if (time.value === 0) {
-          // 发请求，验证码
-          await userMobileLoginMsg(form.mobile) // 无返回值，默认123456
-          // 验证码请求成功，开启倒计时
-          time.value = 60
-          resume()
+          try {
+            // 发请求，验证码
+            await userMobileLoginMsg(form.mobile) // 无返回值，默认123456
+            // 验证码请求成功，开启倒计时
+            time.value = 60
+            resume()
+            Message('发送成功', 'success')
+          } catch (error) {
+            if (error.response) {
+              Message(error.response.data.message, 'error')
+            }
+          }
         } else {
           return Message('验证码已发送，请注意查收')
         }
@@ -289,7 +296,7 @@ export default {
     // 配置的目的是得到一个QQ登录地址
     // 默认是新开一个窗口进行登录(window.open)
     // 可将地址复制去出，赋值给a链接，即可实现在同一窗口进行交互
-    return { isMsgLogin, form, myScheme, FormCom, login, sendCode, time }
+    return { isMsgLogin, form, mySchema, FormCom, login, sendCode, time }
   }
 }
 </script>
