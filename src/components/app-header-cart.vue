@@ -1,5 +1,5 @@
 <template>
-  <div class="cart">
+  <div class="cart" @mouseenter="ishide = false">
     <RouterLink class="curr" to="/cart">
       <i class="iconfont icon-cart"></i>
       <em>{{ $store.getters["cart/validCount"] }}</em>
@@ -7,6 +7,7 @@
     <!-- 弹层 -->
     <div
       class="layer"
+      :class="{ hide: ishide }"
       v-if="$store.getters['cart/validCount'] && $route.path !== '/cart'"
     >
       <div class="list">
@@ -15,7 +16,7 @@
           v-for="goods in $store.getters['cart/validList']"
           :key="goods.skuId"
         >
-          <RouterLink :to="`/product/${goods.id}`">
+          <RouterLink :to="`/product/${goods.id}`" @click="hideLayer">
             <img :src="goods.picture" />
             <div class="center">
               <p class="name ellipsis-2">
@@ -46,6 +47,7 @@
 <script>
 import { useStore } from 'vuex'
 import Message from '@/components/library/message'
+import { ref } from '@vue/reactivity'
 export default {
   name: 'AppHeaderCart',
   setup (props) {
@@ -63,7 +65,13 @@ export default {
       })
     }
 
-    return { deleteGoods }
+    // 点击跳转时，关闭弹层
+    const ishide = ref(false)
+    const hideLayer = () => {
+      ishide.value = true
+    }
+
+    return { deleteGoods, hideLayer, ishide }
   }
 }
 </script>
@@ -114,6 +122,9 @@ export default {
     background: #fff;
     border-radius: 4px;
     padding-top: 10px;
+    &.hide {
+      opacity: 0;
+    }
     &::before {
       content: "";
       position: absolute;
