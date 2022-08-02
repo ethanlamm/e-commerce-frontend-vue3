@@ -159,6 +159,24 @@ export default {
           resolve()
         }
       })
+    },
+    // 全选
+    checkAll (ctx, selected) {
+      return new Promise((resolve, reject) => {
+        // 判断是否登录
+        // 不同模块之间获取数据 ctx.rootState
+        if (ctx.rootState.user.profile.token) {
+          // 已登录
+          alert('已登录，调用api')
+        } else {
+          // 未登录
+          // 遍历购物车中的有效商品列表，逐个改变商品勾选状态
+          ctx.getters.validList.forEach(item => {
+            ctx.commit('UPDATECART', { skuId: item.skuId, selected })
+          })
+          resolve()
+        }
+      })
     }
   }
 }

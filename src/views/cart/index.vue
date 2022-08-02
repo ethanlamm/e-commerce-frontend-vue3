@@ -12,7 +12,10 @@
           <thead>
             <tr>
               <th width="120">
-                <XtxCheckbox :modelValue="$store.getters['cart/isSelectedAll']">
+                <XtxCheckbox
+                  :modelValue="$store.getters['cart/isSelectedAll']"
+                  @change="checkAll"
+                >
                   全选
                 </XtxCheckbox>
               </th>
@@ -114,7 +117,10 @@
       <!-- 操作栏 -->
       <div class="action">
         <div class="batch">
-          <XtxCheckbox :modelValue="$store.getters['cart/isSelectedAll']">
+          <XtxCheckbox
+            :modelValue="$store.getters['cart/isSelectedAll']"
+            @change="checkAll"
+          >
             全选
           </XtxCheckbox>
           <a href="javascript:;">删除商品</a>
@@ -156,7 +162,12 @@ export default {
       })
     }
 
-    return { priceFormat, checkOne }
+    // 点击全选
+    const checkAll = (selected) => {
+      store.dispatch('cart/checkAll', selected)
+    }
+
+    return { priceFormat, checkOne, checkAll }
   }
 }
 </script>
