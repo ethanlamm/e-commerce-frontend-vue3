@@ -102,7 +102,7 @@ export default {
       })
     },
 
-    // 更新购物车
+    // 更新购物车(整个购物车)
     updateCart (ctx) {
       return new Promise((resolve, reject) => {
         // 判断是否登录
@@ -141,6 +141,21 @@ export default {
         } else {
           // 未登录
           ctx.commit('DELETEGOODS', skuId)
+          resolve()
+        }
+      })
+    },
+    // 更新购物车中的信息(购物车页面的 全选、单选、数量变化等)
+    updateGoodsStatus (ctx, goods) {
+      return new Promise((resolve, reject) => {
+        // 判断是否登录
+        // 不同模块之间获取数据 ctx.rootState
+        if (ctx.rootState.user.profile.token) {
+          // 已登录
+          alert('已登录，调用api')
+        } else {
+          // 未登录
+          ctx.commit('UPDATECART', goods)
           resolve()
         }
       })

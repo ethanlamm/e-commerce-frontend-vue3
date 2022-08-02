@@ -29,7 +29,12 @@
               v-for="goods in $store.getters['cart/validList']"
               :key="goods.skuId"
             >
-              <td><XtxCheckbox :modelValue="goods.selected" /></td>
+              <td>
+                <XtxCheckbox
+                  :modelValue="goods.selected"
+                  @change="($event) => checkOne(goods, $event)"
+                />
+              </td>
               <td>
                 <div class="goods">
                   <RouterLink :to="`/product/${goods.id}`">
@@ -130,16 +135,28 @@
 </template>
 <script>
 import GoodRelevant from '@/views/goods/components/goods-relevant'
+import { useStore } from 'vuex'
 export default {
   name: 'XtxCartPage',
   components: { GoodRelevant },
   setup (props) {
+    const store = useStore()
     // 价格格式化(2位小数) 过滤器 即 函数
     const priceFormat = (value) => {
       return value.toFixed(2)
     }
 
-    return { priceFormat }
+    // 点击每个商品前的复选框
+    const checkOne = (goods, selected) => {
+      // $event 先接收(占位)，后再传给当前函数，selected即为子组件传出的值，为要改变的值
+      // console.log(selected);
+      store.dispatch('cart/updateGoodsStatus', {
+        skuId: goods.skuId,
+        selected
+      })
+    }
+
+    return { priceFormat, checkOne }
   }
 }
 </script>
