@@ -47,7 +47,7 @@
 <script>
 import { useStore } from 'vuex'
 import Message from '@/components/library/message'
-import { ref } from '@vue/reactivity'
+import { ref } from 'vue'
 export default {
   name: 'AppHeaderCart',
   setup (props) {

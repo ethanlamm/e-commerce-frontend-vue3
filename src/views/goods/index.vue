@@ -1,6 +1,6 @@
 <template>
-  <div class="xtx-goods-page" v-if="goods">
-    <div class="container">
+  <div class="xtx-goods-page">
+    <div class="container" v-if="goods">
       <!-- 面包屑 -->
       <XtxBread>
         <XtxBreadItem to="/">首页</XtxBreadItem>
@@ -50,6 +50,12 @@
           <GoodsHot :type="1"></GoodsHot>
           <GoodsHot :type="2"></GoodsHot>
         </div>
+      </div>
+    </div>
+    <!-- loading图 -->
+    <div class="container" v-else>
+      <div class="imgContainer">
+        <div><img src="../../assets/images/loading.gif" /></div>
       </div>
     </div>
   </div>
@@ -173,6 +179,17 @@ const getData = () => {
 </script>
 
 <style scoped lang='less'>
+.container {
+  .imgContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 600px;
+    margin-top: 20px;
+    background-color: white;
+  }
+}
 .goods-info {
   min-height: 600px;
   background: #fff;
