@@ -28,7 +28,9 @@
           <!-- 数量选择 -->
           <XtxNumbox label="数量" v-model="num"></XtxNumbox>
           <!-- 按钮 -->
-          <XtxButton type="primary" class="button">加入购物车</XtxButton>
+          <XtxButton type="primary" class="button" @click="addCart"
+            >加入购物车</XtxButton
+          >
         </div>
       </div>
       <!-- 商品推荐 -->
@@ -54,7 +56,7 @@
 </template>
 
 <script>
-import { nextTick, provide, ref, watch } from 'vue'
+import { nextTick, provide, ref, reactive, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { getGoods } from '@/api/goods'
 import GoodsRelevant from './components/goods-relevant'
@@ -65,6 +67,8 @@ import GoodsSku from './components/goods-sku'
 import GoodsTabs from './components/goods-tabs.vue'
 import GoodsHot from './components/goods-hot.vue'
 import GoodsWarn from './components/goods-warn.vue'
+import Message from '@/components/library/message'
+import { useStore } from 'vuex'
 export default {
   name: 'XtxGoodsPage',
   components: {
@@ -84,18 +88,64 @@ export default {
     // 祖先组件提供数据供后代组件使用
     provide('goods', goods)
 
+    const SKUINFO = reactive({})
     // 接收sku组件选择后的sku信息
     const getSkuInfo = (skuInfo) => {
       // 根据已选择的sku，修改信息
       // 有skuId，才修改
+      // 这是规格组件选择完整后，修改展示商品信息的操作
       if (skuInfo.skuId) {
         goods.value.price = skuInfo.price
         goods.value.oldPrice = skuInfo.oldPrice
         goods.value.inventory = skuInfo.inventory
       }
+      // 接收传过来的sku信息，可能为完整信息，也可能为空对象
+      SKUINFO.value = skuInfo
+      // console.log(SKUINFO.value);
     }
+
+    // 商品数量
     const num = ref(1)
-    return { goods, getSkuInfo, num }
+    const store = useStore()
+
+    // 加入购物车
+    // 由于有登录和未登录状态：
+    // 已登录只需要传skuId、conut，然后请求接口，返回数据
+    // 未登录，则需要根据已登录返回的数据结构，先准备好数据，然后再dispatch给vuex，在vuex中将数据存储在本地
+    // 需要准备数据 {id,skuId,name,attrsText,picture,price,nowPrice,selected,stock,count,isEffective}
+    const addCart = () => {
+      // 已选择完整商品信息
+      if (SKUINFO.value && SKUINFO.value.skuId) {
+        // 解构整理参数
+        const { id, name, mainPictures } = goods.value
+        const {
+          skuId,
+          specsText: attrsText,
+          price,
+          inventory: stock
+        } = SKUINFO.value
+        // dispatch
+        store
+          .dispatch('cart/addCart', {
+            id,
+            skuId,
+            name,
+            attrsText,
+            picture: mainPictures[0],
+            price,
+            nowPrice: price,
+            selected: true,
+            stock,
+            count: num.value,
+            isEffective: true
+          })
+          .then(() => Message('加入购物车成功', 'success'))
+          .catch((e) => {})
+      } else {
+        Message('请选择完整规格')
+      }
+    }
+    return { goods, getSkuInfo, num, addCart }
   }
 }
 // 获取数据
@@ -110,6 +160,7 @@ const getData = () => {
           temp.value = null
           nextTick(() => {
             temp.value = data.result
+            // console.log(temp.value);
           })
         })
       }
