@@ -39,8 +39,17 @@
   </div>
 </template>
 <script>
+import { useStore } from 'vuex'
 export default {
-  name: 'AppHeaderCart'
+  name: 'AppHeaderCart',
+  setup (props) {
+    // 每次初始化时，更新购物车的最新信息
+    const store = useStore()
+    store
+      .dispatch('cart/updateCart')
+      .then(() => {})
+      .catch((e) => {})
+  }
 }
 </script>
 <style scoped lang="less">
