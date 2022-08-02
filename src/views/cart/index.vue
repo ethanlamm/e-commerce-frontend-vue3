@@ -28,7 +28,11 @@
           </thead>
           <!-- 有效商品 -->
           <tbody>
+            <tr v-if="$store.getters['cart/validList'].length == 0">
+              <td colspan="6"><CartNone></CartNone></td>
+            </tr>
             <tr
+              v-else
               v-for="goods in $store.getters['cart/validList']"
               :key="goods.skuId"
             >
@@ -72,7 +76,9 @@
               </td>
               <td class="tc">
                 <p><a href="javascript:;">移入收藏夹</a></p>
-                <p><a class="green" href="javascript:;">删除</a></p>
+                <p @click="deleteOne(goods.skuId)">
+                  <a class="green" href="javascript:;">删除</a>
+                </p>
                 <p><a href="javascript:;">找相似</a></p>
               </td>
             </tr>
@@ -107,7 +113,9 @@
                 </p>
               </td>
               <td class="tc">
-                <p><a class="green" href="javascript:;">删除</a></p>
+                <p @click="deleteOne(item.skuId)">
+                  <a class="green" href="javascript:;">删除</a>
+                </p>
                 <p><a href="javascript:;">找相似</a></p>
               </td>
             </tr>
@@ -141,15 +149,17 @@
 </template>
 <script>
 import GoodRelevant from '@/views/goods/components/goods-relevant'
+import CartNone from './components/cart-none.vue'
 import { useStore } from 'vuex'
 export default {
   name: 'XtxCartPage',
-  components: { GoodRelevant },
+  components: { GoodRelevant, CartNone },
   setup (props) {
     const store = useStore()
     // 价格格式化(2位小数) 过滤器 即 函数
     const priceFormat = (value) => {
-      return value.toFixed(2)
+      // toFixed:需要先转换成数字类型
+      return parseFloat(value).toFixed(2)
     }
 
     // 点击每个商品前的复选框
@@ -167,7 +177,12 @@ export default {
       store.dispatch('cart/checkAll', selected)
     }
 
-    return { priceFormat, checkOne, checkAll }
+    // 点击每个商品后的删除操作
+    const deleteOne = (skuId) => {
+      store.dispatch('cart/deleteGoods', skuId)
+    }
+
+    return { priceFormat, checkOne, checkAll, deleteOne }
   }
 }
 </script>

@@ -36,7 +36,7 @@ export default {
     },
     // 是否全选：有效商品列表.length === 已选择商品列表.length
     isSelectedAll (state, getters) {
-      return getters.validList !== 0 && getters.validList.length === getters.selectedList.length
+      return getters.validList.length !== 0 && getters.validList.length === getters.selectedList.length
     },
     // 无效商品列表
     invalidList (state) {
