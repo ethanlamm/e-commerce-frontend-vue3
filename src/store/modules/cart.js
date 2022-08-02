@@ -20,6 +20,28 @@ export default {
     validAmount (state, getters) {
       const temp = getters.validList.reduce((p, c) => p + c.nowPrice * 100 * c.count, 0) / 100
       return temp.toFixed(2)
+    },
+    // 已选择商品列表
+    selectedList (state, getters) {
+      return getters.validList.filter(item => item.selected)
+    },
+    // 已选择商品总数量
+    selectedCount (state, getters) {
+      return getters.selectedList.reduce((p, c) => p + c.count, 0)
+    },
+    // 已选商品总金额
+    selectedAmount (state, getters) {
+      const temp = getters.selectedList.reduce((p, c) => p + c.nowPrice * 100 * c.count, 0) / 100
+      return temp.toFixed(2)
+    },
+    // 是否全选：有效商品列表.length === 已选择商品列表.length
+    isSelectedAll (state, getters) {
+      return getters.validList !== 0 && getters.validList.length === getters.selectedList.length
+    },
+    // 无效商品列表
+    invalidList (state) {
+      // 无库存或者无效商品
+      return state.list.filter(item => !item.stock > 0 || !item.isEffective)
     }
   },
 
