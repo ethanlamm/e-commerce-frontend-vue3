@@ -4,7 +4,22 @@ export default {
     list: []
   },
 
-  getters: {},
+  getters: {
+    // 有效商品列表
+    validList (state) {
+      // 库存大于0，isEffective=true
+      return state.list.filter(goods => goods.stock > 0 && goods.isEffective)
+    },
+    // 有效商品总数量
+    validCount (state, getters) {
+      return getters.validList.reduce((p, c) => p + c.count, 0)
+    },
+    // 有效商品总金额
+    validAmount (state, getters) {
+      const temp = getters.validList.reduce((p, c) => p + c.nowPrice * 100 * c.count, 0) / 100
+      return temp.toFixed(2)
+    }
+  },
 
   mutations: {
     ADDCART (state, data) {
