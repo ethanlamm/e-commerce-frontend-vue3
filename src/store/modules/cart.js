@@ -52,7 +52,13 @@ export default {
           }
         }
       }
+    },
+    // 删除单个商品
+    DELETEGOODS (state, skuId) {
+      const index = state.list.findIndex(item => item.skuId === skuId)
+      state.list.splice(index, 1)
     }
+
   },
 
   actions: {
@@ -99,6 +105,21 @@ export default {
             // promise成功，该action返回成功
             resolve()
           }).catch(e => { })
+        }
+      })
+    },
+    // 删除单个商品
+    deleteGoods (ctx, skuId) {
+      return new Promise((resolve, reject) => {
+        // 判断是否登录
+        // 不同模块之间获取数据 ctx.rootState
+        if (ctx.rootState.user.profile.token) {
+          // 已登录
+          alert('已登录，调用api')
+        } else {
+          // 未登录
+          ctx.commit('DELETEGOODS', skuId)
+          resolve()
         }
       })
     }
