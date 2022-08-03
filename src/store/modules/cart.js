@@ -1,4 +1,4 @@
-import { getNewCartGoods, mergeCart, getCartList, addToCart } from '@/api/cart'
+import { getNewCartGoods, mergeCart, getCartList, addToCart, deleteCart } from '@/api/cart'
 
 export default {
   namespaced: true,
@@ -151,6 +151,13 @@ export default {
         // 不同模块之间获取数据 ctx.rootState
         if (ctx.rootState.user.profile.token) {
           // 已登录
+          deleteCart([skuId]).then(() => {
+            // 更新列表
+            return getCartList()
+          }).then(data => {
+            ctx.commit('SETCART', data.result)
+            resolve()
+          })
         } else {
           // 未登录
           ctx.commit('DELETEGOODS', skuId)
@@ -195,15 +202,27 @@ export default {
       return new Promise((resolve, reject) => {
         // 判断是否登录
         // 不同模块之间获取数据 ctx.rootState
-        if (ctx.rootState.user.profile.token) {
-          // 已登录
-        } else {
-          // 未登录
-          // 已勾选列表 | 无效列表
-          ctx.getters[clearInvalid ? 'invalidList' : 'selectedList'].forEach(item => {
-            ctx.commit('DELETEGOODS', item.skuId)
-          })
-          resolve()
+        const templist = ctx.getters[clearInvalid ? 'invalidList' : 'selectedList']
+        if (templist && templist.length !== 0) {
+          if (ctx.rootState.user.profile.token) {
+            // 已登录
+            // 拿到批量删除的skuId列表
+            const ids = templist.map(item => item.skuId)
+            deleteCart(ids).then(() => {
+              // 更新列表
+              return getCartList()
+            }).then(data => {
+              ctx.commit('SETCART', data.result)
+              resolve()
+            })
+          } else {
+            // 未登录
+            // 已勾选列表 | 无效列表
+            templist.forEach(item => {
+              ctx.commit('DELETEGOODS', item.skuId)
+            })
+            resolve()
+          }
         }
       })
     },

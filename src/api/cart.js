@@ -46,3 +46,12 @@ export const getCartList = () => {
 export const addToCart = ({ skuId, count }) => {
   return request('/member/cart', 'post', { skuId, count })
 }
+
+/**
+ * 登录--删除商品（支持批量删除）
+ * @param {Array<string>} ids - skuId集合
+ * @returns Promise
+ */
+export const deleteCart = (ids) => {
+  return request('/member/cart', 'delete', { ids })
+}
