@@ -36,3 +36,13 @@ export const mergeCart = (cartList) => {
 export const getCartList = () => {
   return request('/member/cart', 'get')
 }
+
+/**
+ * 登录--加入购物车
+ * @param {String} skuId - 商品SKUID
+ * @param {Integer} count - 商品数量
+ * @returns Promise
+ */
+export const addToCart = ({ skuId, count }) => {
+  return request('/member/cart', 'post', { skuId, count })
+}

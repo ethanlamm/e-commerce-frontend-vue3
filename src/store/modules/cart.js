@@ -1,4 +1,4 @@
-import { getNewCartGoods, mergeCart, getCartList } from '@/api/cart'
+import { getNewCartGoods, mergeCart, getCartList, addToCart } from '@/api/cart'
 
 export default {
   namespaced: true,
@@ -96,6 +96,14 @@ export default {
         // 不同模块之间获取数据 ctx.rootState
         if (ctx.rootState.user.profile.token) {
           // 已登录
+          const { skuId, count } = skuInfo
+          addToCart({ skuId, count }).then(() => {
+            // 更新列表
+            return getCartList()
+          }).then(data => {
+            ctx.commit('SETCART', data.result)
+            resolve()
+          })
         } else {
           // 未登录
           ctx.commit('ADDCART', skuInfo)
