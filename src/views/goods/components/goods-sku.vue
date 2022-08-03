@@ -33,35 +33,37 @@ const getPathMap = (skus) => {
   // 2.遍历有货sku.specs，取出每个属性，并组合成一个属性数组(映射)
   // 3.依据属性数组，使用bwPowerSet方法，得到幂数组
   // 4.依据幂数组，映射得到路径字典对象
-  skus.forEach((sku) => {
-    // 1.有货？
-    if (sku.inventory > 0) {
-      // 2.得到属性数组
-      const attrArr = sku.specs.map((attrObj) => attrObj.valueName)
 
-      // 3.得到幂数组
-      // 属性数组[1,2,3] ==bwPowerSet==> 幂数组[[],[1],[2],[3],[1,2],[1,3],[2,3],[1,2,3]]
-      const powerArr = bwPowerSet(attrArr)
+  skus &&
+    skus.forEach((sku) => {
+      // 1.有货？
+      if (sku.inventory > 0) {
+        // 2.得到属性数组
+        const attrArr = sku.specs.map((attrObj) => attrObj.valueName)
 
-      // 4.得到路径字典对象
-      // 幂数组 -映射-> 路径字典
-      // 幂数组中的元素(数组)，作为路径字典对象的key，sku.id作为路径字典对象的相应key的value
-      powerArr.forEach((item) => {
-        // 排除幂数组中第一个空数组
-        if (item.length !== 0) {
-          const key = item.join(spliter) // 数组不能作为key，要转换成字符串
+        // 3.得到幂数组
+        // 属性数组[1,2,3] ==bwPowerSet==> 幂数组[[],[1],[2],[3],[1,2],[1,3],[2,3],[1,2,3]]
+        const powerArr = bwPowerSet(attrArr)
 
-          if (pathMap[key]) {
-            // 如果路径字典中存在该key，则push当前项的sku.id
-            pathMap[key].push(sku.id)
-          } else {
-            // 如果路径字典中不存在该key，则赋值当前项的sku.id作为元素的数组
-            pathMap[key] = [sku.id]
+        // 4.得到路径字典对象
+        // 幂数组 -映射-> 路径字典
+        // 幂数组中的元素(数组)，作为路径字典对象的key，sku.id作为路径字典对象的相应key的value
+        powerArr.forEach((item) => {
+          // 排除幂数组中第一个空数组
+          if (item.length !== 0) {
+            const key = item.join(spliter) // 数组不能作为key，要转换成字符串
+
+            if (pathMap[key]) {
+              // 如果路径字典中存在该key，则push当前项的sku.id
+              pathMap[key].push(sku.id)
+            } else {
+              // 如果路径字典中不存在该key，则赋值当前项的sku.id作为元素的数组
+              pathMap[key] = [sku.id]
+            }
           }
-        }
-      })
-    }
-  })
+        })
+      }
+    })
 
   return pathMap
 }
@@ -71,6 +73,7 @@ const getSelectedArr = (specs) => {
   const selectedArr = []
   specs.forEach((spec) => {
     const selectedVal = spec.values.find((val) => val.selected)
+    // 有选中的按钮，将按钮名称放入；没有找到，放入undefined
     selectedArr.push(selectedVal ? selectedVal.name : undefined)
   })
   return selectedArr
@@ -80,27 +83,43 @@ const updateStatus = (specs, pathMap) => {
   // 1.每个specs.values中的item项的disabled控制本身是否禁用
   // 标准：是否存在于pathMap的key中
 
-  specs.forEach((spec, index) => {
-    // selectedArr初始值均为undefined
-    const selectedArr = getSelectedArr(specs)
-    // console.log("##", selectedArr);
-    spec.values.forEach((val) => {
-      // 2.选中的值，说明是可选的，则不会禁用
-      if (val.selected) return
+  if (specs !== undefined && specs.length !== 0) {
+    specs.forEach((spec, index) => {
+      // selectedArr初始值均为undefined
+      const selectedArr = getSelectedArr(specs)
+      // console.log("##", selectedArr);
+      spec.values.forEach((val) => {
+        // 2.选中的值，说明是可选的，则不会禁用
+        if (val.selected) return
 
-      // 3.selectedArr初始值均为undefined，而specs每项的values的初始值均未选中，val.selected=false
-      // 为初始化时，每项依据pathMap来决定是否禁用，则初始时每项选中一次，然后拿选中项与pathMap对比
-      selectedArr[index] = val.name
-      // console.log("@@", selectedArr);
+        // 3.selectedArr初始值均为undefined，而specs每项的values的初始值均未选中，val.selected=false
+        // 为初始化时，每项依据pathMap来决定是否禁用，则初始时每项选中一次，然后拿选中项与pathMap对比
+        selectedArr[index] = val.name
+        // console.log("@@", selectedArr);
 
-      // 4.剔除undefined，并生成key
-      const key = selectedArr.filter((v) => v !== undefined).join(spliter)
-      // console.log(key);
+        // 4.剔除undefined，并生成key
+        const key = selectedArr.filter((v) => v !== undefined).join(spliter)
+        // console.log(key);
 
-      // 5.根据生成的key去pathMap中找，找到了，就不禁用；否则就禁用
-      val.disabled = !pathMap[key]
+        // 5.根据生成的key去pathMap中找，找到了，就不禁用；否则就禁用
+        val.disabled = !pathMap[key]
+      })
     })
-  })
+  }
+}
+// 初始化选中状态
+const initSelectedStatus = (goods, skuId) => {
+  if (goods && goods.skus && goods.specs && skuId) {
+    const sku = goods.skus.find((sku) => sku.id === skuId)
+    if (sku) {
+      goods.specs.forEach((spec, i) => {
+        const value = sku.specs[i].valueName
+        spec.values.forEach((val) => {
+          val.selected = val.name === value
+        })
+      })
+    }
+  }
 }
 export default {
   name: 'GoodsSku',
@@ -108,14 +127,24 @@ export default {
     goods: {
       type: Object,
       default: () => {}
+    },
+    skuId: {
+      type: String,
+      default: ''
     }
   },
   setup (props, { emit }) {
-    //   拿到路径字典
+    // 拿到路径字典
     const pathMap = getPathMap(props.goods.skus)
+
+    // 依据传入的skuId,渲染已选中的商品规格，有skuId才调用该函数
+    if (props.skuId) {
+      initSelectedStatus(props.goods, props.skuId)
+    }
     // 初始化时，渲染可点属性与不可点属性
     updateStatus(props.goods.specs, pathMap)
     // console.log(pathMap);
+
     // 点击选择属性的回调
     const selectSkuValue = (spec, val) => {
       // vue2.0：Vue.$set(obj,key,value)
@@ -139,17 +168,19 @@ export default {
         // 1.根据已选属性数组(作为key)到路径字典中找到skuId
         const skuIdArr = pathMap[selectedArr.join(spliter)]
         // 2.根据skuId到skus中找到该sku
-        const sku = props.goods.skus.find((item) => item.id === skuIdArr[0])
-        // 3.整理sku信息，传出数据
-        emit('sendSkuInfo', {
-          skuId: sku.id,
-          price: sku.price,
-          oldPrice: sku.oldPrice,
-          inventory: sku.inventory,
-          specsText: sku.specs
-            .reduce((p, c) => `${p} ${c.name}:${c.valueName}`, '')
-            .trim()
-        })
+        if (skuIdArr && skuIdArr.length !== 0) {
+          const sku = props.goods.skus.find((item) => item.id === skuIdArr[0])
+          // 3.整理sku信息，传出数据
+          emit('sendSkuInfo', {
+            skuId: sku.id,
+            price: sku.price,
+            oldPrice: sku.oldPrice,
+            inventory: sku.inventory,
+            specsText: sku.specs
+              .reduce((p, c) => `${p} ${c.name}:${c.valueName}`, '')
+              .trim()
+          })
+        }
       } else {
         // 未选择完毕：传出空对象
         emit('sendSkuInfo', {})

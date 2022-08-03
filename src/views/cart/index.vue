@@ -50,6 +50,10 @@
                   <div>
                     <p class="name ellipsis">{{ goods.name }}</p>
                     <!-- 选择规格组件 -->
+                    <CartSku
+                      :attrsText="goods.attrsText"
+                      :skuId="goods.skuId"
+                    ></CartSku>
                   </div>
                 </div>
               </td>
@@ -165,9 +169,10 @@ import GoodRelevant from '@/views/goods/components/goods-relevant'
 import CartNone from './components/cart-none.vue'
 import { useStore } from 'vuex'
 import Confirm from '@/components/library/Confirm'
+import CartSku from './components/cart-sku.vue'
 export default {
   name: 'XtxCartPage',
-  components: { GoodRelevant, CartNone },
+  components: { GoodRelevant, CartNone, CartSku },
   setup (props) {
     const store = useStore()
     // 价格格式化(2位小数) 过滤器 即 函数
