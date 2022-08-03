@@ -151,6 +151,7 @@
 import GoodRelevant from '@/views/goods/components/goods-relevant'
 import CartNone from './components/cart-none.vue'
 import { useStore } from 'vuex'
+import Confirm from '@/components/library/Confirm'
 export default {
   name: 'XtxCartPage',
   components: { GoodRelevant, CartNone },
@@ -179,7 +180,11 @@ export default {
 
     // 点击每个商品后的删除操作
     const deleteOne = (skuId) => {
-      store.dispatch('cart/deleteGoods', skuId)
+      Confirm('删除该商品？')
+        .then(() => {
+          store.dispatch('cart/deleteGoods', skuId)
+        })
+        .catch(() => {})
     }
 
     return { priceFormat, checkOne, checkAll, deleteOne }
