@@ -46,6 +46,11 @@ export default {
     const logout = () => {
       // 本地存储是拿vuex数据存储的，当重置为空对象{}时，本地存储也清空了数据(router/index.js)
       store.commit('user/setUser', {})
+
+      // 退出登录，清空购物车信息(因为这是服务器返回的购物车信息)
+      // 即清除服务器的购物信息，区分本地和服务器的购物车信息
+      store.commit('cart/SETCART', [])
+
       router.push('/login')
     }
     return { profile, logout }
