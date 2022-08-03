@@ -53,10 +53,10 @@ export default {
       // 若不存在，直接添加新商品
       const index = state.list.findIndex(sku => sku.skuId === data.skuId)
       if (index !== -1) {
-        // 删除旧商品
-        state.list.splice(index, 1) // splice 会修改原数组
         // 新商品数量增加
         data.count += state.list[index].count
+        // 删除旧商品
+        state.list.splice(index, 1) // splice 会修改原数组
       }
       // 添加新商品
       state.list.unshift(data)
@@ -187,6 +187,32 @@ export default {
           ctx.getters[clearInvalid ? 'invalidList' : 'selectedList'].forEach(item => {
             ctx.commit('DELETEGOODS', item.skuId)
           })
+          resolve()
+        }
+      })
+    },
+
+    // 更改商品规格
+    // 解析：传入的数据----旧的skuId、不完整的skuInfo
+    // 1.拿旧的skuId，找到旧商品
+    // 2.删除旧商品(每个商品的skuId都不一样，修改过后，旧商品则没有存在的意义)
+    // 3.旧商品信息与传入的不完整的skuInfo合并出一个完整的新商品
+    // 4.将新商品加入购物车
+    changeGoods (ctx, { oldSkuId, skuInfo }) {
+      return new Promise((resolve, reject) => {
+        // 判断是否登录
+        // 不同模块之间获取数据 ctx.rootState
+        if (ctx.rootState.user.profile.token) {
+          // 已登录
+        } else {
+          // 未登录
+          const oldGoods = ctx.state.list.find(item => item.skuId === oldSkuId)
+          if (oldGoods) {
+            ctx.commit('DELETEGOODS', oldSkuId)
+          }
+          const { skuId, price: nowPrice, inventory: stock, specsText: attrsText } = skuInfo
+          const newGoods = { ...oldGoods, skuId, nowPrice, stock, attrsText }
+          ctx.commit('ADDCART', newGoods)
           resolve()
         }
       })

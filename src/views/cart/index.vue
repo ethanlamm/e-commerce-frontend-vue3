@@ -53,6 +53,7 @@
                     <CartSku
                       :attrsText="goods.attrsText"
                       :skuId="goods.skuId"
+                      @change="($event) => changeHandler(goods.skuId, $event)"
                     ></CartSku>
                   </div>
                 </div>
@@ -219,13 +220,19 @@ export default {
       store.dispatch('cart/updateGoodsStatus', { skuId, count })
     }
 
+    // 商品规格修改
+    const changeHandler = (oldSkuId, skuInfo) => {
+      store.dispatch('cart/changeGoods', { oldSkuId, skuInfo })
+    }
+
     return {
       priceFormat,
       checkOne,
       checkAll,
       deleteOne,
       batchDelete,
-      changeCount
+      changeCount,
+      changeHandler
     }
   }
 }

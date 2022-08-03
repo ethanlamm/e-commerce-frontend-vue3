@@ -7,13 +7,28 @@
     <div class="layer" v-if="visible">
       <!-- loading图 -->
       <div v-if="loading" class="loading"></div>
-      <!-- 商品规格组件 -->
-      <GoodsSku v-else :goods="goods" :skuId="skuId"></GoodsSku>
+      <template v-else>
+        <!-- 商品规格组件 -->
+        <GoodsSku
+          :goods="goods"
+          :skuId="skuId"
+          @sendSkuInfo="getSkuInfo"
+        ></GoodsSku>
+        <!-- 确认按钮 -->
+        <XtxButton
+          type="primary"
+          size="mini"
+          style="margin-left: 60px"
+          @click="confirm"
+        >
+          确认
+        </XtxButton>
+      </template>
     </div>
   </div>
 </template>
 <script>
-import { ref } from 'vue'
+import { reactive, ref } from 'vue'
 import { onClickOutside } from '@vueuse/core'
 import { getSpecsAndSkus } from '@/api/cart'
 // 引入商品规格组件
@@ -31,7 +46,7 @@ export default {
       default: ''
     }
   },
-  setup (props) {
+  setup (props, { emit }) {
     const target = ref(null)
     // 默认隐藏
     const visible = ref(false)
@@ -66,7 +81,27 @@ export default {
       visible.value ? close() : open()
     }
 
-    return { visible, target, toggle, loading, goods }
+    // 接收规格组件修改后的sku信息
+    const skuInfo = reactive({})
+    const getSkuInfo = (data) => {
+      skuInfo.value = data
+    }
+
+    // 点击确认按钮，将sku信息传出
+    const confirm = () => {
+      // 修改需要是完整的信息(即有skuId)、并且和旧商品不一样(即skuId不同，新旧不同)
+      if (
+        skuInfo.value &&
+        skuInfo.value.skuId &&
+        skuInfo.value.skuId !== props.skuId
+      ) {
+        emit('change', skuInfo.value)
+      }
+      // 关闭规格选择
+      close()
+    }
+
+    return { visible, target, toggle, loading, goods, getSkuInfo, confirm }
   }
 }
 </script>
