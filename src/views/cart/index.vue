@@ -141,7 +141,7 @@
           >
             全选
           </XtxCheckbox>
-          <a href="javascript:;">删除商品</a>
+          <a href="javascript:;" @click="deleteSelected">删除已选商品</a>
           <a href="javascript:;">移入收藏夹</a>
           <a href="javascript:;">清空失效商品</a>
         </div>
@@ -197,7 +197,16 @@ export default {
         .catch(() => {})
     }
 
-    return { priceFormat, checkOne, checkAll, deleteOne }
+    // 删除已选商品
+    const deleteSelected = () => {
+      Confirm('确定删除选中的商品？')
+        .then(() => {
+          store.dispatch('cart/deleteSelected')
+        })
+        .catch(() => {})
+    }
+
+    return { priceFormat, checkOne, checkAll, deleteOne, deleteSelected }
   }
 }
 </script>
