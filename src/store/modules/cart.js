@@ -1,4 +1,4 @@
-import { getNewCartGoods } from '@/api/cart'
+import { getNewCartGoods, mergeCart } from '@/api/cart'
 
 export default {
   namespaced: true,
@@ -79,8 +79,11 @@ export default {
     DELETEGOODS (state, skuId) {
       const index = state.list.findIndex(item => item.skuId === skuId)
       state.list.splice(index, 1)
+    },
+    // 修改购物车数据
+    SETCART (state, list) {
+      state.list = list
     }
-
   },
 
   actions: {
@@ -216,6 +219,22 @@ export default {
           resolve()
         }
       })
+    },
+
+    // 合并购物车
+    async mergeCart (ctx) {
+      // 1.整理参数 [{skuId,selected,count}...]
+      const reqParams = ctx.state.list.map(item => {
+        return {
+          skuId: item.skuId,
+          selected: item.selected,
+          count: item.count
+        }
+      })
+      // 2.发请求
+      await mergeCart(reqParams) // 无返回值
+      // 3.请求成功后，清空本地购物车信息
+      ctx.commit('SETCART', [])
     }
   }
 }

@@ -86,9 +86,12 @@ export default {
             // 当前页是 '/login/callback'，而 redirectUrl 是在 '/login' 路径下的 query上
             // 因此在 '/login' 跳转至QQ登录前，先将redirectUrl存储与vuex中(在login/index.vue中完成)
             // 在QQ登录后，跳转至 '/login/callback' ，登录成功后，再将redirectUrl取出，再跳转至redirectUrl
-            router.push(store.state.user.redirectUrl)
-            // 提示登录成功
-            Message('登录成功', 'success')
+            // 先合并购物车数据，合并成功后(then)再跳转
+            store.dispatch('cart/mergeCart').then(() => {
+              router.push(store.state.user.redirectUrl)
+              // 提示登录成功
+              Message('登录成功', 'success')
+            })
           })
           .catch((e) => {
             // 代表QQ未绑定，展示两个表单

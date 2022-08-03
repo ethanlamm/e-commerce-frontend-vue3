@@ -221,11 +221,15 @@ export default {
             mobile,
             token
           })
-          // 路由跳转
-          const redirectUrl = route.query.redirectUrl
-          router.push(redirectUrl || '/')
-          // 提示成功
-          Message('登录成功', 'success')
+
+          // 先合并购物车数据，合并成功后(then)再跳转
+          store.dispatch('cart/mergeCart').then(() => {
+            // 路由跳转
+            const redirectUrl = route.query.redirectUrl
+            router.push(redirectUrl || '/')
+            // 提示成功
+            Message('登录成功', 'success')
+          })
         } catch (err) {
           // 请求失败
           if (err.response) {

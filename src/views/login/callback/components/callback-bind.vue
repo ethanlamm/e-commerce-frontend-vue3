@@ -175,10 +175,14 @@ export default {
               mobile,
               token
             })
-            // 跳转
-            router.push(store.state.user.redirectUrl || '/')
-            // 提示成功
-            Message('QQ绑定成功', 'success')
+
+            // 先合并购物车数据，合并成功后(then)再跳转
+            store.dispatch('cart/mergeCart').then(() => {
+              // 跳转
+              router.push(store.state.user.redirectUrl || '/')
+              // 提示成功
+              Message('QQ绑定成功', 'success')
+            })
           })
           .catch((e) => {
             if (e.response) {
