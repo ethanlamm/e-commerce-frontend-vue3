@@ -65,7 +65,10 @@
               </td>
               <!-- 数量 -->
               <td class="tc">
-                <XtxNumbox :modelValue="goods.count" />
+                <XtxNumbox
+                  :modelValue="goods.count"
+                  @change="($event) => changeCount(goods.skuId, $event)"
+                />
               </td>
               <!-- 小计 -->
               <td class="tc">
@@ -206,7 +209,19 @@ export default {
         .catch(() => {})
     }
 
-    return { priceFormat, checkOne, checkAll, deleteOne, batchDelete }
+    // 商品数量修改
+    const changeCount = (skuId, count) => {
+      store.dispatch('cart/updateGoodsStatus', { skuId, count })
+    }
+
+    return {
+      priceFormat,
+      checkOne,
+      checkAll,
+      deleteOne,
+      batchDelete,
+      changeCount
+    }
   }
 }
 </script>
