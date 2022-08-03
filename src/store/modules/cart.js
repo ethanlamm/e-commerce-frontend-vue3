@@ -174,8 +174,8 @@ export default {
       })
     },
 
-    // 删除已勾选商品
-    deleteSelected (ctx) {
+    // 批量删除商品
+    batchDelete (ctx, clearInvalid) {
       return new Promise((resolve, reject) => {
         // 判断是否登录
         // 不同模块之间获取数据 ctx.rootState
@@ -183,7 +183,8 @@ export default {
           // 已登录
         } else {
           // 未登录
-          ctx.getters.selectedList.forEach(item => {
+          // 已勾选列表 | 无效列表
+          ctx.getters[clearInvalid ? 'invalidList' : 'selectedList'].forEach(item => {
             ctx.commit('DELETEGOODS', item.skuId)
           })
           resolve()

@@ -141,9 +141,9 @@
           >
             全选
           </XtxCheckbox>
-          <a href="javascript:;" @click="deleteSelected">删除已选商品</a>
+          <a href="javascript:;" @click="batchDelete(false)">删除已选商品</a>
           <a href="javascript:;">移入收藏夹</a>
-          <a href="javascript:;">清空失效商品</a>
+          <a href="javascript:;" @click="batchDelete(true)">清空失效商品</a>
         </div>
         <div class="total">
           共 {{ $store.getters["cart/validCount"] }} 件商品，已选择
@@ -197,16 +197,16 @@ export default {
         .catch(() => {})
     }
 
-    // 删除已选商品
-    const deleteSelected = () => {
-      Confirm('确定删除选中的商品？')
+    // 批量删除  已选商品 | 清空失效商品
+    const batchDelete = (clearInvalid) => {
+      Confirm(`确定${clearInvalid ? '清空失效' : '删除选中'}的商品？`)
         .then(() => {
-          store.dispatch('cart/deleteSelected')
+          store.dispatch('cart/batchDelete', clearInvalid)
         })
         .catch(() => {})
     }
 
-    return { priceFormat, checkOne, checkAll, deleteOne, deleteSelected }
+    return { priceFormat, checkOne, checkAll, deleteOne, batchDelete }
   }
 }
 </script>
