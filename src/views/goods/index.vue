@@ -73,7 +73,7 @@ import GoodsSku from './components/goods-sku'
 import GoodsTabs from './components/goods-tabs.vue'
 import GoodsHot from './components/goods-hot.vue'
 import GoodsWarn from './components/goods-warn.vue'
-import Message from '@/components/library/message'
+import Message from '@/components/library/Message'
 import { useStore } from 'vuex'
 export default {
   name: 'XtxGoodsPage',

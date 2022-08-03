@@ -46,7 +46,7 @@
 </template>s
 <script>
 import { useStore } from 'vuex'
-import Message from '@/components/library/message'
+import Message from '@/components/library/Message'
 import { ref } from 'vue'
 export default {
   name: 'AppHeaderCart',

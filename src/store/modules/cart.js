@@ -93,7 +93,6 @@ export default {
         // 不同模块之间获取数据 ctx.rootState
         if (ctx.rootState.user.profile.token) {
           // 已登录
-          alert('已登录，调用api')
         } else {
           // 未登录
           ctx.commit('ADDCART', skuInfo)
@@ -109,7 +108,6 @@ export default {
         // 不同模块之间获取数据 ctx.rootState
         if (ctx.rootState.user.profile.token) {
           // 已登录
-          alert('已登录，调用api')
         } else {
           // 未登录
           // 调用api( getNewCartGoods(skuId) )，查询最新商品信息
@@ -137,7 +135,6 @@ export default {
         // 不同模块之间获取数据 ctx.rootState
         if (ctx.rootState.user.profile.token) {
           // 已登录
-          alert('已登录，调用api')
         } else {
           // 未登录
           ctx.commit('DELETEGOODS', skuId)
@@ -152,7 +149,6 @@ export default {
         // 不同模块之间获取数据 ctx.rootState
         if (ctx.rootState.user.profile.token) {
           // 已登录
-          alert('已登录，调用api')
         } else {
           // 未登录
           ctx.commit('UPDATECART', goods)
@@ -167,7 +163,6 @@ export default {
         // 不同模块之间获取数据 ctx.rootState
         if (ctx.rootState.user.profile.token) {
           // 已登录
-          alert('已登录，调用api')
         } else {
           // 未登录
           // 遍历购物车中的有效商品列表，逐个改变商品勾选状态

@@ -76,8 +76,13 @@
               </td>
               <td class="tc">
                 <p><a href="javascript:;">移入收藏夹</a></p>
-                <p @click="deleteOne(goods.skuId)">
-                  <a class="green" href="javascript:;">删除</a>
+                <p>
+                  <a
+                    class="green"
+                    href="javascript:;"
+                    @click="deleteOne(goods.skuId)"
+                    >删除</a
+                  >
                 </p>
                 <p><a href="javascript:;">找相似</a></p>
               </td>
@@ -113,8 +118,13 @@
                 </p>
               </td>
               <td class="tc">
-                <p @click="deleteOne(item.skuId)">
-                  <a class="green" href="javascript:;">删除</a>
+                <p>
+                  <a
+                    class="green"
+                    href="javascript:;"
+                    @click="deleteOne(item.skuId)"
+                    >删除</a
+                  >
                 </p>
                 <p><a href="javascript:;">找相似</a></p>
               </td>

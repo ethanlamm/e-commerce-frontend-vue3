@@ -101,7 +101,7 @@ import { Form, Field } from 'vee-validate'
 import schema from '@/utils/vee-validate-schema'
 import { userQQPatchCode, userQQPatchLogin } from '@/api/user'
 import { useIntervalFn } from '@vueuse/core'
-import Message from '@/components/library/message'
+import Message from '@/components/library/Message'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 export default {

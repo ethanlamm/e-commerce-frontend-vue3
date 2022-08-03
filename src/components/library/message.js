@@ -20,7 +20,7 @@ let timer = null
 
 /**
  *  消息函数
- * @param {String} type 消息类型
+ * @param {String} type 消息类型 warn 警告  error 错误  success 成功
  * @param {String} text 消息文字
  */
 export default (text, type) => {
