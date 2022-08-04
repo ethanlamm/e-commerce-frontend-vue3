@@ -171,7 +171,7 @@ import CartNone from './components/cart-none.vue'
 import { useStore } from 'vuex'
 import Confirm from '@/components/library/Confirm'
 import CartSku from './components/cart-sku.vue'
-import Message from '@/components/library/Message'
+import Message from '@/components/library/message'
 import { useRouter } from 'vue-router'
 export default {
   name: 'XtxCartPage',

@@ -58,7 +58,7 @@ import { Form, Field } from 'vee-validate'
 import schema from '@/utils/vee-validate-schema'
 import { userQQBindCode, userQQBindLogin } from '@/api/user'
 import { useIntervalFn } from '@vueuse/core'
-import Message from '@/components/library/Message'
+import Message from '@/components/library/message'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 export default {

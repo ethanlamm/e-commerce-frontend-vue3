@@ -123,7 +123,7 @@
 import { ref, reactive, watch, onUnmounted } from 'vue'
 import { Form, Field } from 'vee-validate'
 import schema from '@/utils/vee-validate-schema'
-import Message from '@/components/library/Message'
+import Message from '@/components/library/message'
 import {
   userAccountLogin,
   userMobileLoginMsg,

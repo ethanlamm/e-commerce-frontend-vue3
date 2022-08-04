@@ -8,7 +8,7 @@
 import defaultImg from '@/assets/images/200.png'
 
 // 消息函数
-import Message from './Message'
+import Message from './message'
 
 // import XtxSkeleton from './xtx-skeleton.vue'
 // import XtsCarousel from './xtx-carousel.vue'
