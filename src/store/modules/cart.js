@@ -1,4 +1,4 @@
-import { getNewCartGoods, mergeCart, getCartList, addToCart, deleteCart } from '@/api/cart'
+import { getNewCartGoods, mergeCart, getCartList, addToCart, deleteCart, updateCart, checkAllCart } from '@/api/cart'
 
 export default {
   namespaced: true,
@@ -119,6 +119,7 @@ export default {
         // 不同模块之间获取数据 ctx.rootState
         if (ctx.rootState.user.profile.token) {
           // 已登录
+          // 获取登录后的购物车列表(整个)
           getCartList().then(data => {
             ctx.commit('SETCART', data.result)
             // 登录后，跳转至首页，首页头部的cart组件初始化，dispatch => updateCart => 走登录流程 => 获取服务器的购物车信息 => commit => SETCART => state.list 为服务器最新购物车信息 => 首页头部cart组件和购物车页面的信息，都是依据 state.list => getters => 因此均为最新服务器购物车信息
@@ -165,13 +166,21 @@ export default {
         }
       })
     },
-    // 更新购物车中的信息(购物车页面的 全选、单选、数量变化等)
+    // 更新购物车中的信息(购物车页面的 全选、单选、数量变化等)--单个
     updateGoodsStatus (ctx, goods) {
       return new Promise((resolve, reject) => {
         // 判断是否登录
         // 不同模块之间获取数据 ctx.rootState
         if (ctx.rootState.user.profile.token) {
           // 已登录
+          // 更新单个商品的 selected count
+          updateCart(goods).then(() => {
+            // 更新列表
+            return getCartList()
+          }).then(data => {
+            ctx.commit('SETCART', data.result)
+            resolve()
+          })
         } else {
           // 未登录
           ctx.commit('UPDATECART', goods)
@@ -186,6 +195,14 @@ export default {
         // 不同模块之间获取数据 ctx.rootState
         if (ctx.rootState.user.profile.token) {
           // 已登录
+          const ids = ctx.getters.validList.map(item => item.skuId)
+          checkAllCart(ids, selected).then(() => {
+            // 更新列表
+            return getCartList()
+          }).then(data => {
+            ctx.commit('SETCART', data.result)
+            resolve()
+          })
         } else {
           // 未登录
           // 遍历购物车中的有效商品列表，逐个改变商品勾选状态
