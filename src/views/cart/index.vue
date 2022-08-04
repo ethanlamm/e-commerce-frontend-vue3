@@ -211,6 +211,9 @@ export default {
 
     // 批量删除  已选商品 | 清空失效商品
     const batchDelete = (clearInvalid) => {
+      const templist =
+        store.getters[clearInvalid ? 'cart/invalidList' : 'cart/selectedList']
+      if (templist.length === 0) return Message('没有要删除的商品')
       Confirm(`确定${clearInvalid ? '清空失效' : '删除选中'}的商品？`)
         .then(() => {
           store.dispatch('cart/batchDelete', clearInvalid)
