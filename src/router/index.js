@@ -25,6 +25,10 @@ const routes = [
       {
         path: '/cart',
         component: () => import('@/views/cart')
+      },
+      {
+        path: '/member/checkout',
+        component: () => import('@/views/member/checkout')
       }
     ]
   },
