@@ -256,6 +256,21 @@ export default {
         // 不同模块之间获取数据 ctx.rootState
         if (ctx.rootState.user.profile.token) {
           // 已登录
+          // 逻辑与本地处理一样，只不过删除旧商品、添加新商品是调用服务器接口
+          // 并且添加新商品只需要 skuId count 即可
+          // 找出旧商品
+          const oldGoods = ctx.state.list.find(item => item.skuId === oldSkuId)
+          // 删除旧商品
+          deleteCart([oldSkuId]).then(() => {
+            // 添加新商品(合并新旧数据！ count: oldGoods.count)
+            return addToCart({ skuId: skuInfo.skuId, count: oldGoods.count })
+          }).then(() => {
+            // 获取购物车新数据列表
+            return getCartList()
+          }).then(data => {
+            ctx.commit('SETCART', data.result)
+            resolve()
+          })
         } else {
           // 未登录
           const oldGoods = ctx.state.list.find(item => item.skuId === oldSkuId)
