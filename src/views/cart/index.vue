@@ -236,14 +236,20 @@ export default {
       }
       // 2.是否已登录：若没有先去登录，后回调结算页(拦截，路由守卫)
       // 3.跳转结算页
-      // 已勾选商品，但未登录
-      Confirm('结算前请先登录，现在去登录？')
-        .then(() => {
-          router.push('/member/checkout')
-        })
-        .catch(() => {
-          Message('您取消了结算')
-        })
+      // 已勾选商品，先判断是否登录
+      if (!store.state.user.profile.token) {
+        // 未登录
+        Confirm('结算前请先登录，现在去登录？')
+          .then(() => {
+            router.push('/member/checkout')
+          })
+          .catch(() => {
+            Message('您取消了结算')
+          })
+      } else {
+        // 已登录，直接跳转 结算页
+        router.push('/member/checkout')
+      }
     }
 
     return {
