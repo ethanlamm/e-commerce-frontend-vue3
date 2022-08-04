@@ -11,7 +11,7 @@
         <h3 class="box-title">收货地址</h3>
         <div class="box-body">
           <!-- 收货地址组件 -->
-          <CheckoutAddress></CheckoutAddress>
+          <CheckoutAddress :list="order.userAddresses"></CheckoutAddress>
         </div>
         <!-- 商品信息 -->
         <h3 class="box-title">商品信息</h3>

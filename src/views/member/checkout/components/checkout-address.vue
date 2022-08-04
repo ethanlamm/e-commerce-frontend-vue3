@@ -1,13 +1,21 @@
 <template>
   <div class="checkout-address">
     <div class="text">
-      <!-- <div class="none">您需要先添加收货地址才可提交订单。</div> -->
-      <ul>
+      <div class="none" v-if="!showAddress">
+        您需要先添加收货地址才可提交订单。
+      </div>
+      <ul v-if="showAddress">
         <li>
-          <span>收<i />货<i />人：</span>朱超
+          <span>收<i />货<i />人：</span>{{ showAddress.receiver }}
         </li>
-        <li><span>联系方式：</span>132****2222</li>
-        <li><span>收货地址：</span>海南省三亚市解放路108号物质大厦1003室</li>
+        <li>
+          <span>联系方式：</span>
+          {{ showAddress.contact.replace(/^(\d{3})\d{4}(\d{4})$/, "$1****$2") }}
+        </li>
+        <li>
+          <span>收货地址：</span>
+          {{ showAddress.fullLocation }}{{ showAddress.address }}
+        </li>
       </ul>
       <a href="javascript:;">修改地址</a>
     </div>
@@ -18,8 +26,37 @@
   </div>
 </template>
 <script>
+import { computed, ref } from 'vue'
 export default {
-  name: 'CheckoutAddress'
+  name: 'CheckoutAddress',
+  props: {
+    list: {
+      type: Array,
+      default: () => []
+    }
+  },
+  setup (props) {
+    // 展示地址
+    // 1.list无数据，展示提示信息
+    // 2.list有数据：
+    // 2.1从list中找到默认地址，展示，默认地址
+    // 2.2list中无默认地址，则展示第一条
+
+    const showAddress = ref(null)
+    const addresslist = computed(() => props.list)
+    if (addresslist.value && addresslist.value.length) {
+      const findResult = addresslist.value.find((item) => item.isDefault === 0)
+      if (findResult) {
+        // 找到了默认地址
+        showAddress.value = findResult
+      } else {
+        // 没有默认地址 ==> 第一条
+        showAddress.value = addresslist.value[0]
+      }
+    }
+
+    return { showAddress }
+  }
 }
 </script>
 <style scoped lang="less">
