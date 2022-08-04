@@ -157,7 +157,7 @@
           共 {{ $store.getters["cart/validCount"] }} 件商品，已选择
           {{ $store.getters["cart/selectedCount"] }} 件，商品合计：
           <span class="red">¥ {{ $store.getters["cart/selectedAmount"] }}</span>
-          <XtxButton type="primary">下单结算</XtxButton>
+          <XtxButton type="primary" @click="checkout">下单结算</XtxButton>
         </div>
       </div>
       <!-- 猜你喜欢 -->
@@ -171,11 +171,14 @@ import CartNone from './components/cart-none.vue'
 import { useStore } from 'vuex'
 import Confirm from '@/components/library/Confirm'
 import CartSku from './components/cart-sku.vue'
+import Message from '@/components/library/Message'
+import { useRouter } from 'vue-router'
 export default {
   name: 'XtxCartPage',
   components: { GoodRelevant, CartNone, CartSku },
   setup (props) {
     const store = useStore()
+    const router = useRouter()
     // 价格格式化(2位小数) 过滤器 即 函数
     const priceFormat = (value) => {
       // toFixed:需要先转换成数字类型
@@ -225,6 +228,24 @@ export default {
       store.dispatch('cart/changeGoods', { oldSkuId, skuInfo })
     }
 
+    // 结算
+    const checkout = () => {
+      // 1.是否选中商品进行结算
+      if (store.getters['cart/selectedList'].length === 0) {
+        return Message('至少选择一件商品结算')
+      }
+      // 2.是否已登录：若没有先去登录，后回调结算页(拦截，路由守卫)
+      // 3.跳转结算页
+      // 已勾选商品，但未登录
+      Confirm('结算前请先登录，现在去登录？')
+        .then(() => {
+          router.push('/member/checkout')
+        })
+        .catch(() => {
+          Message('您取消了结算')
+        })
+    }
+
     return {
       priceFormat,
       checkOne,
@@ -232,7 +253,8 @@ export default {
       deleteOne,
       batchDelete,
       changeCount,
-      changeHandler
+      changeHandler,
+      checkout
     }
   }
 }
