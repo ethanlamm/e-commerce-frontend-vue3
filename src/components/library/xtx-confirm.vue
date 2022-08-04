@@ -22,7 +22,7 @@
 </template>
 <script>
 import { ref } from 'vue'
-import { nextTick, onMounted } from '@vue/runtime-core'
+import { onMounted } from '@vue/runtime-core'
 import XtxButton from '@/components/library/xtx-button.vue'
 export default {
   name: 'XtxConfirm',
@@ -46,7 +46,11 @@ export default {
   setup (props) {
     const fade = ref(false)
     onMounted(() => {
-      nextTick(() => (fade.value = true))
+      // nextTick(() => (fade.value = true));   ----> 无效
+      // 结构和样式同时加上无过度效果，需要些延时。
+      setTimeout(() => {
+        fade.value = true
+      }, 0)
     })
 
     // 点击取消或关闭
