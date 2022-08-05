@@ -83,6 +83,9 @@ export default {
     .body {
       padding: 20px 40px;
       font-size: 16px;
+      // 设置滚动条：有高度，overflow: auto
+      height: 300px;
+      overflow: auto;
       .icon-warning {
         color: @priceColor;
         margin-right: 3px;

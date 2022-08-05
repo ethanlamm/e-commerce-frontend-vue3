@@ -11,7 +11,10 @@
         <h3 class="box-title">收货地址</h3>
         <div class="box-body">
           <!-- 收货地址组件 -->
-          <CheckoutAddress :list="order.userAddresses"></CheckoutAddress>
+          <CheckoutAddress
+            :list="order.userAddresses"
+            @selectedAddress="selectedAddressHandler"
+          ></CheckoutAddress>
         </div>
         <!-- 商品信息 -->
         <h3 class="box-title">商品信息</h3>
@@ -98,7 +101,7 @@
   </div>
 </template>
 <script>
-import { ref } from 'vue'
+import { reactive, ref } from 'vue'
 import CheckoutAddress from './components/checkout-address.vue'
 import { createOrder } from '@/api/checkout'
 export default {
@@ -110,7 +113,18 @@ export default {
       order.value = data.result
     })
 
-    return { order }
+    // 请求参数
+    const reqParams = reactive({
+      addressId: null
+    })
+
+    // 地址选择，接收子组件的地址id
+    const selectedAddressHandler = (id) => {
+      reqParams.addressId = id
+      console.log(reqParams)
+    }
+
+    return { order, selectedAddressHandler }
   }
 }
 </script>

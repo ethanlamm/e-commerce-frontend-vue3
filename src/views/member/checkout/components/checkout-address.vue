@@ -4,7 +4,7 @@
       <div class="none" v-if="!showAddress">
         您需要先添加收货地址才可提交订单。
       </div>
-      <ul v-if="showAddress">
+      <ul v-else>
         <li>
           <span>收<i />货<i />人：</span>{{ showAddress.receiver }}
         </li>
@@ -20,26 +20,47 @@
       <a href="javascript:;">修改地址</a>
     </div>
     <div class="action">
-      <XtxButton class="btn" @click="dialogVisible = true">切换地址</XtxButton>
+      <XtxButton class="btn" @click="openDialog">切换地址</XtxButton>
       <XtxButton class="btn">添加地址</XtxButton>
     </div>
   </div>
   <!-- 对话框 -->
   <XtxDialog title="切换收货地址" v-model:visible="dialogVisible">
-    内容
+    <div
+      class="text item"
+      v-for="item in list"
+      :key="item.id"
+      @click="tempAddress = item"
+      :class="{ active: tempAddress && tempAddress.id === item.id }"
+    >
+      <ul>
+        <li>
+          <span>收<i />货<i />人：</span>{{ item.receiver }}
+        </li>
+        <li>
+          <span>联系方式：</span>
+          {{ item.contact.replace(/^(\d{3})\d{4}(\d{4})$/, "$1****$2") }}
+        </li>
+        <li>
+          <span>收货地址：</span>
+          {{ item.fullLocation.replace(/ /g, "") + item.address }}
+        </li>
+      </ul>
+    </div>
     <template #footer>
       <XtxButton
         type="gray"
         style="margin-right: 20px"
         @click="dialogVisible = false"
-        >取消</XtxButton
       >
-      <XtxButton type="primary" @click="dialogVisible = false">确认</XtxButton>
+        取消
+      </XtxButton>
+      <XtxButton type="primary" @click="confirmAddress">确认</XtxButton>
     </template>
   </XtxDialog>
 </template>
 <script>
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 export default {
   name: 'CheckoutAddress',
   props: {
@@ -48,13 +69,15 @@ export default {
       default: () => []
     }
   },
-  setup (props) {
+  setup (props, { emit }) {
+    // 对话框的显示隐藏
+    const dialogVisible = ref(false)
+
     // 展示地址
     // 1.list无数据，展示提示信息
     // 2.list有数据：
     // 2.1从list中找到默认地址，展示，默认地址
     // 2.2list中无默认地址，则展示第一条
-
     const showAddress = ref(null)
     const addresslist = computed(() => props.list)
     if (addresslist.value && addresslist.value.length) {
@@ -68,14 +91,69 @@ export default {
       }
     }
 
-    // 对话框的显示隐藏
-    const dialogVisible = ref(false)
+    watch(
+      () => showAddress.value,
+      (newValue) => {
+        if (newValue) {
+          emit('selectedAddress', newValue.id)
+        }
+      },
+      { immediate: true }
+    )
 
-    return { showAddress, dialogVisible }
+    const tempAddress = ref(null)
+
+    // 打开对话框--切换地址
+    const openDialog = () => {
+      // 1.清空上次选择的地址
+      tempAddress.value = null
+      // 2.打开对话框
+      dialogVisible.value = true
+    }
+
+    // 点击确认按钮
+    const confirmAddress = () => {
+      // 1.将选择的地址赋值给showAddress进行显示
+      showAddress.value = tempAddress.value
+      // 2.通知父组件，选择地址的id--watch侦听
+      // 3.关闭对话框
+      dialogVisible.value = false
+    }
+
+    return {
+      showAddress,
+      dialogVisible,
+      tempAddress,
+      confirmAddress,
+      openDialog
+    }
   }
 }
 </script>
 <style scoped lang="less">
+.xtx-dialog {
+  .text {
+    flex: 1;
+    min-height: 90px;
+    display: flex;
+    align-items: center;
+    &.item {
+      border: 1px solid #f5f5f5;
+      margin-bottom: 10px;
+      cursor: pointer;
+      &.active,
+      &:hover {
+        border-color: @xtxColor;
+        background: lighten(@xtxColor, 50%);
+      }
+      > ul {
+        padding: 10px;
+        font-size: 14px;
+        line-height: 30px;
+      }
+    }
+  }
+}
 .checkout-address {
   border: 1px solid #f5f5f5;
   display: flex;
