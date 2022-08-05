@@ -47,8 +47,8 @@
               @selectedAttr="xtxCityHandler"
             />
           </div>
-          <div class="error" v-if="!form.fullLocation">
-            <i class="iconfont icon-warning" />请选择收货地区
+          <div class="error" v-if="XtxCityTip">
+            <i class="iconfont icon-warning" />{{ XtxCityTip }}
           </div>
         </div>
         <div class="xtx-form-item">
@@ -92,7 +92,13 @@
       </Form>
     </div>
     <template v-slot:footer>
-      <XtxButton type="gray" style="margin-right: 20px">取消</XtxButton>
+      <XtxButton
+        type="gray"
+        style="margin-right: 20px"
+        @click="dialogVisible = false"
+      >
+        取消
+      </XtxButton>
       <XtxButton type="primary" @click="confirm">确认</XtxButton>
     </template>
   </XtxDialog>
@@ -110,6 +116,10 @@ export default {
     const dialogVisible = ref(false)
     // 打开函数
     const open = (address) => {
+      // 清除验证
+      FormCom.value.resetForm()
+      XtxCityTip.value = null
+
       if (address.id) {
         // 有id，编辑地址
         // 展示要修改的地址
@@ -150,6 +160,8 @@ export default {
       form.cityCode = data.cityCode
       form.countyCode = data.countryCode
       form.fullLocation = data.fullLocation
+      // 选择完毕后，隐藏城市组件提醒
+      XtxCityTip.value = null
     }
 
     const FormCom = ref(null)
@@ -160,6 +172,9 @@ export default {
       address: schema.address,
       postalCode: schema.postalCode
     }
+
+    // 城市组件提醒
+    const XtxCityTip = ref(null)
     // 点击确认按钮
     const confirm = async () => {
       const result = await FormCom.value.validate()
@@ -203,6 +218,8 @@ export default {
         }
         // 关闭对话框
         dialogVisible.value = false
+      } else {
+        XtxCityTip.value = '请选择地区'
       }
     }
     return {
@@ -212,7 +229,8 @@ export default {
       xtxCityHandler,
       confirm,
       mySchema,
-      FormCom
+      FormCom,
+      XtxCityTip
     }
   }
 }
