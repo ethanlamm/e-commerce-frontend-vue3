@@ -101,7 +101,7 @@
   </div>
 </template>
 <script>
-import { reactive, ref } from 'vue'
+import { provide, reactive, ref } from 'vue'
 import CheckoutAddress from './components/checkout-address.vue'
 import { createOrder } from '@/api/checkout'
 export default {
@@ -109,9 +109,16 @@ export default {
   components: { CheckoutAddress },
   setup (props) {
     const order = ref(null)
-    createOrder().then((data) => {
-      order.value = data.result
-    })
+    // 获取订单数据函数
+    const getOrderInfo = () => {
+      createOrder().then((data) => {
+        order.value = data.result
+        console.log(order.value)
+      })
+    }
+    getOrderInfo()
+
+    provide('getOrderInfo', getOrderInfo)
 
     // 请求参数
     const reqParams = reactive({
@@ -121,7 +128,6 @@ export default {
     // 地址选择，接收子组件的地址id
     const selectedAddressHandler = (id) => {
       reqParams.addressId = id
-      console.log(reqParams)
     }
 
     return { order, selectedAddressHandler }

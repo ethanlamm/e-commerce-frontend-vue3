@@ -84,17 +84,26 @@ export default {
     // 2.2list中无默认地址，则展示第一条
     const showAddress = ref(null)
     const addresslist = computed(() => props.list)
-    if (addresslist.value && addresslist.value.length) {
-      const findResult = addresslist.value.find((item) => item.isDefault === 0)
-      if (findResult) {
-        // 找到了默认地址
-        showAddress.value = findResult
-      } else {
-        // 没有默认地址 ==> 第一条
-        showAddress.value = addresslist.value[0]
-      }
-    }
 
+    // 这是添加地址后，addresslist改变，再次渲染选中的地址信息(showAddress)
+    watch(
+      () => addresslist.value,
+      (newValue) => {
+        if (newValue && newValue.length) {
+          const findResult = newValue.find((item) => item.isDefault === 0)
+          if (findResult) {
+            // 找到了默认地址
+            showAddress.value = findResult
+          } else {
+            // 没有默认地址 ==> 第一条
+            showAddress.value = newValue[0]
+          }
+        }
+      },
+      { immediate: true }
+    )
+
+    // 这是切换地址，传出地址id
     watch(
       () => showAddress.value,
       (newValue) => {
