@@ -47,5 +47,25 @@ export default {
     // 校验密码是否一致  form表单数据对象
     if (value !== form.password) return '两次输入的密码不一致'
     return true
+  },
+  // 收货人
+  receiver (value) {
+    if (!value) return '请填写收货人'
+    return true
+  },
+  // 详细地址
+  address (value) {
+    if (!value) return '请填写详细地址'
+    return true
+  },
+  // 邮政编码
+  postalCode (value) {
+    if (value) {
+      const reg = /[1-9]\d{5}(?!\d)/
+      const result = reg.test(value)
+      if (!result) return '邮政编码格式不正确'
+    } else {
+      return true
+    }
   }
 }

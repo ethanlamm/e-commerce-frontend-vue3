@@ -4,25 +4,38 @@
     v-model:visible="dialogVisible"
   >
     <div class="address-edit">
-      <div class="xtx-form">
+      <Form
+        class="xtx-form"
+        :validation-schema="mySchema"
+        v-slot="{ errors }"
+        ref="FormCom"
+      >
         <div class="xtx-form-item">
           <div class="label">收货人：</div>
           <div class="field">
-            <input
+            <Field
+              name="receiver"
               v-model="form.receiver"
               class="input"
               placeholder="请输入收货人"
             />
           </div>
+          <div class="error" v-if="errors.receiver">
+            <i class="iconfont icon-warning" />{{ errors.receiver }}
+          </div>
         </div>
         <div class="xtx-form-item">
           <div class="label">手机号：</div>
           <div class="field">
-            <input
+            <Field
+              name="mobile"
               v-model="form.contact"
               class="input"
               placeholder="请输入手机号"
             />
+          </div>
+          <div class="error" v-if="errors.mobile">
+            <i class="iconfont icon-warning" />{{ errors.mobile }}
           </div>
         </div>
         <div class="xtx-form-item">
@@ -34,25 +47,36 @@
               @selectedAttr="xtxCityHandler"
             />
           </div>
+          <div class="error" v-if="!form.fullLocation">
+            <i class="iconfont icon-warning" />请选择收货地区
+          </div>
         </div>
         <div class="xtx-form-item">
           <div class="label">详细地址：</div>
           <div class="field">
-            <input
+            <Field
+              name="address"
               v-model="form.address"
               class="input"
               placeholder="请输入详细地址"
             />
           </div>
+          <div class="error" v-if="errors.address">
+            <i class="iconfont icon-warning" />{{ errors.address }}
+          </div>
         </div>
         <div class="xtx-form-item">
           <div class="label">邮政编码：</div>
           <div class="field">
-            <input
+            <Field
+              name="postalCode"
               v-model="form.postalCode"
               class="input"
               placeholder="请输入邮政编码"
             />
+          </div>
+          <div class="error" v-if="errors.postalCode">
+            <i class="iconfont icon-warning" />{{ errors.postalCode }}
           </div>
         </div>
         <div class="xtx-form-item">
@@ -61,11 +85,11 @@
             <input
               v-model="form.addressTags"
               class="input"
-              placeholder="请输入地址标签，逗号分隔"
+              placeholder="请输入地址标签(以英文逗号分割)"
             />
           </div>
         </div>
-      </div>
+      </Form>
     </div>
     <template v-slot:footer>
       <XtxButton type="gray" style="margin-right: 20px">取消</XtxButton>
@@ -77,8 +101,11 @@
 import { inject, reactive, ref } from 'vue'
 import { addAddress, editAddress } from '@/api/checkout'
 import Message from '@/components/library/message'
+import { Form, Field } from 'vee-validate'
+import schema from '@/utils/vee-validate-schema'
 export default {
   name: 'AddressEdit',
+  components: { Form, Field },
   setup () {
     const dialogVisible = ref(false)
     // 打开函数
@@ -125,47 +152,68 @@ export default {
       form.fullLocation = data.fullLocation
     }
 
-    // 点击确认按钮
-    const confirm = () => {
-      if (form.id) {
-        // 编辑地址
-        editAddress(form)
-          .then((data) => {
-            // 提示成功
-            Message('修改收货地址成功', 'success')
-            // 更新数据
-            updateOrderInfo()
-          })
-          .catch((e) => {
-            if (e.response) {
-              Message(e.response.data.message || '修改地址失败', 'error')
-            }
-          })
-      } else {
-        // 添加地址
-        // 调用添加地址api
-        addAddress(form)
-          .then((data) => {
-            // console.log(data.result);  // 这里返回新添加的地址id
-            // 提示成功
-            Message('添加收货地址成功', 'success')
-            // 更新数据
-            updateOrderInfo()
-          })
-          .catch((e) => {
-            // 最多10个地址
-            if (e.response) {
-              Message(
-                e.response.data.message + '地址信息' || '添加地址失败',
-                'error'
-              )
-            }
-          })
-      }
-      // 关闭对话框
-      dialogVisible.value = false
+    const FormCom = ref(null)
+    // 接收校验规则
+    const mySchema = {
+      receiver: schema.receiver,
+      mobile: schema.mobile,
+      address: schema.address,
+      postalCode: schema.postalCode
     }
-    return { dialogVisible, open, form, xtxCityHandler, confirm }
+    // 点击确认按钮
+    const confirm = async () => {
+      const result = await FormCom.value.validate()
+      if (result && form.fullLocation) {
+        // 验证通过
+
+        if (form.id) {
+          // 编辑地址
+          editAddress(form)
+            .then((data) => {
+              // 提示成功
+              Message('修改收货地址成功', 'success')
+              // 更新数据
+              updateOrderInfo()
+            })
+            .catch((e) => {
+              if (e.response) {
+                Message(e.response.data.message || '修改地址失败', 'error')
+              }
+            })
+        } else {
+          // 添加地址
+          // 调用添加地址api
+          addAddress(form)
+            .then((data) => {
+              // console.log(data.result);  // 这里返回新添加的地址id
+              // 提示成功
+              Message('添加收货地址成功', 'success')
+              // 更新数据
+              updateOrderInfo()
+            })
+            .catch((e) => {
+              // 最多10个地址
+              if (e.response) {
+                Message(
+                  e.response.data.message + '地址信息' || '添加地址失败',
+                  'error'
+                )
+              }
+            })
+        }
+        // 关闭对话框
+        dialogVisible.value = false
+      }
+    }
+    return {
+      dialogVisible,
+      open,
+      form,
+      xtxCityHandler,
+      confirm,
+      mySchema,
+      FormCom
+    }
   }
 }
 </script>
