@@ -14,14 +14,15 @@
         </li>
         <li>
           <span>收货地址：</span>
-          {{ showAddress.fullLocation }}{{ showAddress.address }}
+          {{ showAddress.fullLocation.replace(/ /g, "") }}
+          {{ showAddress.address }}
         </li>
       </ul>
-      <a href="javascript:;">修改地址</a>
+      <a href="javascript:;" @click="openEditDialog(showAddress)">修改地址</a>
     </div>
     <div class="action">
       <XtxButton class="btn" @click="openDialog">切换地址</XtxButton>
-      <XtxButton class="btn" @click="openEditDialog">添加地址</XtxButton>
+      <XtxButton class="btn" @click="openEditDialog({})">添加地址</XtxButton>
     </div>
   </div>
   <!-- 切换地址对话框 -->
@@ -136,8 +137,8 @@ export default {
     // 拿到编辑地址对话框实例
     const editTarget = ref(null)
     // 打开编辑地址对话框
-    const openEditDialog = () => {
-      editTarget.value.open()
+    const openEditDialog = (address) => {
+      editTarget.value.open(address)
     }
 
     return {

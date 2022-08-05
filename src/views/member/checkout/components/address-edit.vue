@@ -1,5 +1,8 @@
 <template>
-  <XtxDialog title="添加收货地址" v-model:visible="dialogVisible">
+  <XtxDialog
+    :title="`${form.id ? '修改' : '添加'}收货地址`"
+    v-model:visible="dialogVisible"
+  >
     <div class="address-edit">
       <div class="xtx-form">
         <div class="xtx-form-item">
@@ -72,18 +75,29 @@
 </template>
 <script>
 import { inject, reactive, ref } from 'vue'
-import { addAddress } from '@/api/checkout'
+import { addAddress, editAddress } from '@/api/checkout'
 import Message from '@/components/library/message'
 export default {
   name: 'AddressEdit',
   setup () {
     const dialogVisible = ref(false)
     // 打开函数
-    const open = () => {
-      for (const key in form) {
-        form[key] = null
+    const open = (address) => {
+      if (address.id) {
+        // 有id，编辑地址
+        // 展示要修改的地址
+        for (const key in address) {
+          form[key] = address[key]
+        }
+      } else {
+        // 无id，添加地址
+        // 清空上一次数据
+        for (const key in form) {
+          form[key] = null
+        }
+        form.isDefault = 1
       }
-      form.isDefault = 1
+      // 打开对话框
       dialogVisible.value = true
     }
 
@@ -113,24 +127,41 @@ export default {
 
     // 点击确认按钮
     const confirm = () => {
-      // 调用添加地址api
-      addAddress(form)
-        .then((data) => {
-          // console.log(data.result);  // 这里返回新添加的地址id
-          // 提示成功
-          Message('添加收货地址成功', 'success')
-          // 更新数据
-          updateOrderInfo()
-        })
-        .catch((e) => {
-          // 最多10个地址
-          if (e.response) {
-            Message(
-              e.response.data.message + '地址信息' || '添加地址失败',
-              'error'
-            )
-          }
-        })
+      if (form.id) {
+        // 编辑地址
+        editAddress(form)
+          .then((data) => {
+            // 提示成功
+            Message('修改收货地址成功', 'success')
+            // 更新数据
+            updateOrderInfo()
+          })
+          .catch((e) => {
+            if (e.response) {
+              Message(e.response.data.message || '修改地址失败', 'error')
+            }
+          })
+      } else {
+        // 添加地址
+        // 调用添加地址api
+        addAddress(form)
+          .then((data) => {
+            // console.log(data.result);  // 这里返回新添加的地址id
+            // 提示成功
+            Message('添加收货地址成功', 'success')
+            // 更新数据
+            updateOrderInfo()
+          })
+          .catch((e) => {
+            // 最多10个地址
+            if (e.response) {
+              Message(
+                e.response.data.message + '地址信息' || '添加地址失败',
+                'error'
+              )
+            }
+          })
+      }
       // 关闭对话框
       dialogVisible.value = false
     }
