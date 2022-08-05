@@ -156,7 +156,7 @@ export default {
         // 1.提示成功
         Message('提交订单成功', 'success')
         // 2.跳转至 支付页(replace--不能回跳至 /member/checkout )
-        router.replace(`/member/pay?orderId${data.result.id}`)
+        router.replace(`/member/pay?orderId=${data.result.id}`)
       })
     }
 
