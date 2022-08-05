@@ -88,7 +88,7 @@
         </div>
         <!-- 提交订单 -->
         <div class="submit">
-          <XtxButton type="primary">提交订单</XtxButton>
+          <XtxButton type="primary" @click="submit">提交订单</XtxButton>
         </div>
       </div>
     </div>
@@ -103,7 +103,9 @@
 <script>
 import { provide, reactive, ref } from 'vue'
 import CheckoutAddress from './components/checkout-address.vue'
-import { createOrder } from '@/api/checkout'
+import { createOrder, submitOrder } from '@/api/checkout'
+import Message from '@/components/library/message'
+import { useRouter } from 'vue-router'
 export default {
   name: 'CheckoutVue',
   components: { CheckoutAddress },
@@ -111,10 +113,18 @@ export default {
     const order = ref(null)
     // 获取订单数据函数
     const getOrderInfo = () => {
-      createOrder().then((data) => {
-        order.value = data.result
-        console.log(order.value)
-      })
+      createOrder()
+        .then((data) => {
+          order.value = data.result
+          reqParams.goods = data.result.goods.map(({ skuId, count }) => {
+            return { skuId, count }
+          })
+        })
+        .catch((e) => {
+          if (e.response) {
+            Message(e.response.data.message || '生成订单失败')
+          }
+        })
     }
     getOrderInfo()
 
@@ -122,6 +132,12 @@ export default {
 
     // 请求参数
     const reqParams = reactive({
+      deliveryTimeType: 1, // 配送时间类型，1为不限，2为工作日，3为双休或假日
+      payType: 1, // 支付方式，1为在线支付，2为货到付款
+      payChannel: 1, // 支付渠道：支付渠道，1支付宝、2微信
+      buyerMessage: '', // 买家留言
+      // 以上4个为默认
+      goods: [],
       addressId: null
     })
 
@@ -130,7 +146,21 @@ export default {
       reqParams.addressId = id
     }
 
-    return { order, selectedAddressHandler }
+    const router = useRouter()
+    // 提交订单按钮
+    const submit = () => {
+      // 判断是否选择了地址
+      if (!reqParams.addressId) return Message('请先选择收货地址，再提交订单')
+      // 发请求
+      submitOrder(reqParams).then((data) => {
+        // 1.提示成功
+        Message('提交订单成功', 'success')
+        // 2.跳转至 支付页(replace--不能回跳至 /member/checkout )
+        router.replace(`/member/pay?orderId${data.result.id}`)
+      })
+    }
+
+    return { order, selectedAddressHandler, submit }
   }
 }
 </script>

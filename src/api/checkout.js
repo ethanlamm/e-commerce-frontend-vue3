@@ -24,3 +24,11 @@ export const addAddress = (form) => {
 export const editAddress = (form) => {
   return request(`/member/address/${form.id}`, 'put', form)
 }
+
+/**
+ * 提交订单
+ * @param {Object} params - 请求参数对象
+ */
+export const submitOrder = (params) => {
+  return request('/member/order', 'post', params)
+}
