@@ -67,7 +67,8 @@ export default {
     background: rgba(0, 0, 0, 0.5);
   }
   .wrapper {
-    width: 600px;
+    min-width: 600px;
+    max-width: 800px;
     background: #fff;
     border-radius: 4px;
     position: absolute;
@@ -84,8 +85,8 @@ export default {
       padding: 20px 40px;
       font-size: 16px;
       // 设置滚动条：有高度，overflow: auto
-      height: 300px;
-      overflow: auto;
+      max-height: 490px;
+      overflow-y: auto;
       .icon-warning {
         color: @priceColor;
         margin-right: 3px;

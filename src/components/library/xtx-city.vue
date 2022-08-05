@@ -1,7 +1,7 @@
 <template>
   <div class="xtx-city" ref="target">
     <div class="select" :class="{ active }" @click="toggleDialog">
-      <span v-if="!fullLocation" class="placeholder">请选择配送地址</span>
+      <span v-if="!fullLocation" class="placeholder">{{ placeholder }}</span>
       <span v-else class="value">{{ fullLocation }}</span>
       <i class="iconfont icon-angle-down"></i>
     </div>
@@ -28,6 +28,10 @@ export default {
   name: 'XtxCity',
   props: {
     fullLocation: {
+      tyepe: String,
+      default: ''
+    },
+    placeholder: {
       tyepe: String,
       default: ''
     }

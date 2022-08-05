@@ -21,10 +21,10 @@
     </div>
     <div class="action">
       <XtxButton class="btn" @click="openDialog">切换地址</XtxButton>
-      <XtxButton class="btn">添加地址</XtxButton>
+      <XtxButton class="btn" @click="openEditDialog">添加地址</XtxButton>
     </div>
   </div>
-  <!-- 对话框 -->
+  <!-- 切换地址对话框 -->
   <XtxDialog title="切换收货地址" v-model:visible="dialogVisible">
     <div
       class="text item"
@@ -58,11 +58,15 @@
       <XtxButton type="primary" @click="confirmAddress">确认</XtxButton>
     </template>
   </XtxDialog>
+  <!-- 添加编辑地址对话框 -->
+  <AddressEdit ref="editTarget"></AddressEdit>
 </template>
 <script>
 import { computed, ref, watch } from 'vue'
+import AddressEdit from './address-edit.vue'
 export default {
   name: 'CheckoutAddress',
+  components: { AddressEdit },
   props: {
     list: {
       type: Array,
@@ -120,12 +124,21 @@ export default {
       dialogVisible.value = false
     }
 
+    // 拿到编辑地址对话框实例
+    const editTarget = ref(null)
+    // 打开编辑地址对话框
+    const openEditDialog = () => {
+      editTarget.value.open()
+    }
+
     return {
       showAddress,
       dialogVisible,
       tempAddress,
       confirmAddress,
-      openDialog
+      openDialog,
+      editTarget,
+      openEditDialog
     }
   }
 }
