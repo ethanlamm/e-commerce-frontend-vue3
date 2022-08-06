@@ -33,6 +33,11 @@ const routes = [
       {
         path: '/member/pay',
         component: () => import('@/views/member/pay')
+      },
+      // 支付后的回调路由
+      {
+        path: '/pay/callback',
+        component: () => import('@/views/member/pay/pay-result.vue')
       }
     ]
   },
