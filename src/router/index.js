@@ -38,6 +38,16 @@ const routes = [
       {
         path: '/pay/callback',
         component: () => import('@/views/member/pay/pay-result.vue')
+      },
+      {
+        path: '/member',
+        component: () => import('@/views/member/Layout.vue'),
+        children: [
+          {
+            path: '/member',
+            component: () => import('@/views/member/home')
+          }
+        ]
       }
     ]
   },
