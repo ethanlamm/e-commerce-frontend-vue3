@@ -6,33 +6,48 @@
         <XtxBreadItem to="/cart">购物车</XtxBreadItem>
         <XtxBreadItem>支付订单</XtxBreadItem>
       </XtxBread>
-      <!-- 付款信息 -->
-      <div class="pay-info">
-        <span class="icon iconfont icon-queren2"></span>
-        <div class="tip">
-          <p>订单提交成功！请尽快完成支付。</p>
-          <p>支付还剩 <span>24分59秒</span>, 超时后将取消订单</p>
+      <div v-if="orderInfo.countdown > -1">
+        <!-- 付款信息 -->
+        <div class="pay-info">
+          <span class="icon iconfont icon-queren2"></span>
+          <div class="tip">
+            <p>订单提交成功！请尽快完成支付。</p>
+            <p>
+              支付还剩
+              <span class="timeText">{{ timeText }}</span>
+              , 超时后将取消订单
+            </p>
+          </div>
+          <div class="amount">
+            <span>应付总额：</span>
+            <span>¥ {{ orderInfo.payMoney.toFixed(2) }}</span>
+          </div>
         </div>
-        <div class="amount">
-          <span>应付总额：</span>
-          <span>¥ {{ orderInfo.payMoney.toFixed(2) }}</span>
+        <!-- 付款方式 -->
+        <div class="pay-type">
+          <p class="head">选择以下支付方式付款</p>
+          <div class="item">
+            <p>支付平台</p>
+            <a class="btn wx" href="javascript:;"></a>
+            <a class="btn alipay" href="javascript:;"></a>
+          </div>
+          <div class="item">
+            <p>支付方式</p>
+            <a class="btn" href="javascript:;">招商银行</a>
+            <a class="btn" href="javascript:;">工商银行</a>
+            <a class="btn" href="javascript:;">建设银行</a>
+            <a class="btn" href="javascript:;">农业银行</a>
+            <a class="btn" href="javascript:;">交通银行</a>
+          </div>
         </div>
       </div>
-      <!-- 付款方式 -->
-      <div class="pay-type">
-        <p class="head">选择以下支付方式付款</p>
-        <div class="item">
-          <p>支付平台</p>
-          <a class="btn wx" href="javascript:;"></a>
-          <a class="btn alipay" href="javascript:;"></a>
-        </div>
-        <div class="item">
-          <p>支付方式</p>
-          <a class="btn" href="javascript:;">招商银行</a>
-          <a class="btn" href="javascript:;">工商银行</a>
-          <a class="btn" href="javascript:;">建设银行</a>
-          <a class="btn" href="javascript:;">农业银行</a>
-          <a class="btn" href="javascript:;">交通银行</a>
+      <!-- 订单超时 -->
+      <div class="timeOut" v-else>
+        <div class="timeBox">
+          <p>你的订单已超时，未支付成功</p>
+          <div class="goHome">
+            <router-link to="/" replace>返回首页</router-link>
+          </div>
         </div>
       </div>
     </div>
@@ -48,18 +63,24 @@
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { getOrderDetail } from '@/api/pay'
+import { usePayTime } from '@/hooks'
 export default {
   name: 'PayVue',
   setup (props) {
     const route = useRoute()
     const orderInfo = ref(null)
 
+    const { start, timeText } = usePayTime()
+
     getOrderDetail(route.query.orderId).then((data) => {
       orderInfo.value = data.result
-      console.log(orderInfo.value)
+      // countdown 倒计时时间
+      if (data.result.countdown > -1) {
+        start(data.result.countdown)
+      }
     })
 
-    return { orderInfo }
+    return { orderInfo, timeText }
   }
 }
 </script>
@@ -73,6 +94,30 @@ export default {
     height: 600px;
     margin-top: 20px;
     background-color: white;
+  }
+  .timeOut {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 200px;
+    background-color: white;
+    .timeBox {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      .goHome {
+        font-size: 18px;
+        font-weight: 500;
+      }
+      p {
+        color: @priceColor;
+        font-size: 20px;
+        font-weight: 700;
+        margin-bottom: 10px;
+      }
+    }
   }
 }
 .pay-info {
@@ -88,6 +133,10 @@ export default {
   .tip {
     padding-left: 10px;
     flex: 1;
+    .timeText {
+      color: @priceColor;
+      font-weight: 700;
+    }
     p {
       &:first-child {
         font-size: 20px;
