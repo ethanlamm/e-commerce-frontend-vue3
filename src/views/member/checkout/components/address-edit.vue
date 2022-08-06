@@ -218,8 +218,12 @@ export default {
         }
         // 关闭对话框
         dialogVisible.value = false
-      } else {
+      } else if (result && !form.fullLocation) {
         XtxCityTip.value = '请选择地区'
+      } else if (!result && !form.fullLocation) {
+        XtxCityTip.value = '请选择地区'
+      } else {
+        XtxCityTip.value = null
       }
     }
     return {
