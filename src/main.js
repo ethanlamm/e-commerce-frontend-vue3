@@ -2,6 +2,9 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
+
+// mockjs
+import '@/mock'
 // 引入样式
 import 'normalize.css'
 // 引入样式重置
