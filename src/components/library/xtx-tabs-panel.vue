@@ -1,13 +1,14 @@
 <template>
-  <div class="xtx-tabs-panel">
+  <div class="xtx-tabs-panel" v-show="activeName === name">
     <slot></slot>
   </div>
 </template>
 
 <script>
+import { inject } from 'vue'
 export default {
   name: 'XtxTabsPanel',
-  pros: {
+  props: {
     // 标签文字
     label: {
       type: String,
@@ -18,6 +19,12 @@ export default {
       type: [String, Number],
       default: ''
     }
+  },
+  setup (props) {
+    const activeName = inject('activeName')
+    // console.log(activeName); // 接收的为响应式数据
+
+    return { activeName }
   }
 }
 </script>

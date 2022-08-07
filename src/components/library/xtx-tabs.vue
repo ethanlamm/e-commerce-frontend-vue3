@@ -1,6 +1,29 @@
 <script>
+import { useVModel } from '@vueuse/core'
+import { provide } from 'vue'
 export default {
   name: 'XtxTabs',
+  props: {
+    modelValue: {
+      type: [String, Number],
+      default: ''
+    }
+  },
+  setup (props, { emit }) {
+    // v-vmodel 双向数据绑定
+    const activeName = useVModel(props, 'modelValue', emit)
+    provide('activeName', activeName) // 这样写，setUp 只执行一次
+
+    // 点击切换tab标签
+    const tabClick = (name, index) => {
+      activeName.value = name
+      provide('activeName', activeName) // 点击后再次传值，传完整的，不要 .value
+
+      // 传出点击的对象
+      emit('tab-change', { name, index })
+    }
+    return { activeName, tabClick }
+  },
   render () {
     // 获取 XtxTabsPanel 组件的插槽内容
     const panelSlots = this.$slots.default()
@@ -24,8 +47,16 @@ export default {
     // 选项--依据面板插槽长度和面板内容进行动态渲染(遍历)
     const nav = (
       <nav>
-        {dynamicPanels.map((item) => {
-          return <a href="javascript:;">{item.props.label}</a>
+        {dynamicPanels.map((item, index) => {
+          return (
+            <a
+              href="javascript:;"
+              onClick={() => this.tabClick(item.props.name, index)}
+              class={{ active: this.activeName === item.props.name }}
+            >
+              {item.props.label}
+            </a>
+          )
         })}
       </nav>
     )
