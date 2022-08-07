@@ -1,8 +1,17 @@
 <template>
   <div class="orderContainer">
     myorder
-    <router-link to="/member/order/1001">订单1</router-link>
-    <router-link to="/member/order/1002">订单2</router-link>
+    <XtxTabs>
+      <xtx-tabs-panel label="标签0" name="0">0</xtx-tabs-panel>
+      <xtx-tabs-panel
+        v-for="i in 4"
+        :key="i"
+        :label="`标签${i}`"
+        :name="`${i}`"
+      >
+        {{ i }}
+      </xtx-tabs-panel>
+    </XtxTabs>
   </div>
 </template>
 
