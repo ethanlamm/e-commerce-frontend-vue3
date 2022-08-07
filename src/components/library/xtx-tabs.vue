@@ -27,7 +27,7 @@ export default {
   render () {
     // 获取 XtxTabsPanel 组件的插槽内容
     const panelSlots = this.$slots.default()
-    console.log(panelSlots)
+    // console.log(panelSlots)
 
     // 区分动静态插槽内容
     const dynamicPanels = []
@@ -38,9 +38,13 @@ export default {
         dynamicPanels.push(item)
       } else {
         // 动态内容
-        item.children.forEach((child) => {
-          dynamicPanels.push(child)
-        })
+        // 这里要判断 item.children 是否为数组，不能用length判断，字符串也有长度
+        // 插件 Vetur 会报错：string.forEach
+        if (item.children && item.children instanceof Array) {
+          item.children.forEach((child) => {
+            dynamicPanels.push(child)
+          })
+        }
       }
     })
 
