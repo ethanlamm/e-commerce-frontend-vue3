@@ -27,7 +27,7 @@ export default {
   render () {
     // 获取 XtxTabsPanel 组件的插槽内容
     const panelSlots = this.$slots.default()
-    // console.log(panelSlots);
+    console.log(panelSlots)
 
     // 区分动静态插槽内容
     const dynamicPanels = []
@@ -84,6 +84,7 @@ export default {
         height: 60px;
         background: #fff;
         line-height: 56px;
+        color: @xtxColor;
       }
     }
   }

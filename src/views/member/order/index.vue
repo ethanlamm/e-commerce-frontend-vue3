@@ -1,8 +1,6 @@
 <template>
-  <div class="orderContainer">
-    myorder
+  <div class="member-order">
     <XtxTabs v-model="activeName" @tab-change="tabChange">
-      <xtx-tabs-panel label="标签0" name="name0">0</xtx-tabs-panel>
       <xtx-tabs-panel
         v-for="i in 4"
         :key="i"
@@ -21,7 +19,7 @@ export default {
   name: 'MemberOrder',
   setup (props) {
     // 接收
-    const activeName = ref('name0')
+    const activeName = ref('name1')
 
     const tabChange = (tab) => {
       console.log(tab)
@@ -32,5 +30,9 @@ export default {
 }
 </script>
 
-<style>
+<style lang="less" scoped>
+.member-order {
+  height: 100%;
+  background-color: #fff;
+}
 </style>
