@@ -1,5 +1,6 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import store from '@/store'
+import { h } from 'vue'
 
 const routes = [
   {
@@ -46,6 +47,23 @@ const routes = [
           {
             path: '/member',
             component: () => import('@/views/member/home')
+          },
+          {
+            path: '/member/order',
+            // /member/order 的菜单激活设置成 模糊匹配
+            // 其实就是形成嵌套关系，放置一个路由出口组件 <RouterView></RouterView>
+            // 当路径为 /member/order/1001 时，我的订单(/member/order)保持激活样式
+            component: { render: () => h(<RouterView></RouterView>) },
+            children: [
+              {
+                path: '',
+                component: () => import('@/views/member/order')
+              },
+              {
+                path: ':id',
+                component: () => import('@/views/member/order/order-detail.vue')
+              }
+            ]
           }
         ]
       }
