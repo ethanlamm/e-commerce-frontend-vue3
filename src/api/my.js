@@ -40,3 +40,12 @@ export const cancelOrder = ({ id, cancelReason }) => {
 export const delteOrder = (ids) => {
   return request('/member/order', 'delete', { ids })
 }
+
+/**
+ * 确认收货
+ * @param {String} id - 订单id
+ * @returns
+ */
+export const confirmOrder = (id) => {
+  return request(`/member/order/${id}/receipt`, 'put')
+}

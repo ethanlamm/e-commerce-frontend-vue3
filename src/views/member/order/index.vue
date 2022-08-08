@@ -18,6 +18,7 @@
         :order="item"
         @on-cancel="cancelHandler"
         @on-delete="deleteHandler"
+        @on-confirmReceipt="confirmReceipt"
       ></OrderItem>
       <!-- 数据加载中 -->
       <div v-if="loading" class="loading"></div>
@@ -41,7 +42,7 @@
 import { reactive, ref, watch, provide } from 'vue'
 import { orderStatus } from '@/api/constant.js'
 import OrderItem from './components/order-item.vue'
-import { getOrderList, delteOrder } from '@/api/my'
+import { getOrderList, delteOrder, confirmOrder } from '@/api/my'
 import OrderCancel from './components/order-cancel.vue'
 import Confirm from '@/components/library/Confirm'
 import Message from '@/components/library/message'
@@ -111,6 +112,20 @@ export default {
         .catch(() => Message('您已取消删除订单'))
     }
 
+    // 确认收货
+    const confirmReceipt = (order) => {
+      // 弹窗
+      Confirm('您确认收到货吗？')
+        .then(() => {
+          confirmOrder(order.id).then(() => {
+            Message('确认收货成功', 'success')
+            // 再次请求数据
+            getData()
+          })
+        })
+        .catch(() => Message('您已取消确认收货'))
+    }
+
     return {
       activeName,
       tabChange,
@@ -120,7 +135,8 @@ export default {
       reqParams,
       totalData,
       ...cancelFn(),
-      deleteHandler
+      deleteHandler,
+      confirmReceipt
     }
   }
 }
