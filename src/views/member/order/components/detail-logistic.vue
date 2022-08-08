@@ -9,7 +9,7 @@
   <!-- 查看物流对话框 -->
   <!-- teleport:传送，适用于较深层次的弹窗组件 -->
   <!-- 在index.html中声明一个id为logistic的容器，teleport组件包裹的内容将传送到该容器中显示 -->
-  <teleport to="#logistic">
+  <teleport to="#dialog">
     <OrderLogistic ref="OrderLogisticCom"></OrderLogistic>
   </teleport>
 </template>

@@ -146,7 +146,7 @@ export default {
   }
 }
 // 取消订单逻辑
-const cancelFn = () => {
+export const cancelFn = () => {
   // 父组件获取子组件实例
   const OrderCancelCom = ref(null)
 

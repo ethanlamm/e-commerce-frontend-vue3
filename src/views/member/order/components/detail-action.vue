@@ -19,7 +19,9 @@
         >
           立即付款
         </XtxButton>
-        <XtxButton type="gray" size="small">取消订单</XtxButton>
+        <XtxButton type="gray" size="small" @click="cancelHandler(order)"
+          >取消订单</XtxButton
+        >
       </template>
       <!-- 已超时 -->
       <template v-if="order.orderState === 1 && order.countdown === -1">
@@ -49,11 +51,17 @@
       <!-- 6已取消：无 -->
     </div>
   </div>
+  <teleport to="#dialog">
+    <OrderCancel ref="OrderCancelCom"></OrderCancel>
+  </teleport>
 </template>
 <script>
 import { orderStatus } from '@/api/constant'
+import OrderCancel from './order-cancel.vue'
+import { cancelFn } from '../index.vue'
 export default {
   name: 'DetailAction',
+  components: { OrderCancel },
   props: {
     order: {
       type: Object,
@@ -61,7 +69,7 @@ export default {
     }
   },
   setup (props) {
-    return { orderStatus }
+    return { orderStatus, ...cancelFn() }
   }
 }
 </script>
