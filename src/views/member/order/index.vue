@@ -116,20 +116,6 @@ export default {
         .catch(() => Message('您已取消删除订单'))
     }
 
-    // 确认收货
-    const confirmReceipt = (order) => {
-      // 弹窗
-      Confirm('您确认收到货吗？')
-        .then(() => {
-          confirmOrder(order.id).then(() => {
-            Message('确认收货成功', 'success')
-            // 再次请求数据
-            getData()
-          })
-        })
-        .catch(() => Message('您已取消确认收货'))
-    }
-
     return {
       activeName,
       tabChange,
@@ -140,7 +126,7 @@ export default {
       totalData,
       ...cancelFn(),
       deleteHandler,
-      confirmReceipt,
+      ...confirmFn(getData),
       ...logisticFn()
     }
   }
@@ -157,7 +143,22 @@ export const cancelFn = () => {
 
   return { cancelHandler, OrderCancelCom }
 }
-
+// 确认收货逻辑
+export const confirmFn = (cb) => {
+  const confirmReceipt = (order) => {
+    // 弹窗
+    Confirm('您确认收到货吗？')
+      .then(() => {
+        confirmOrder(order.id).then(() => {
+          Message('确认收货成功', 'success')
+          // 再次请求数据
+          cb && cb()
+        })
+      })
+      .catch(() => Message('您已取消确认收货'))
+  }
+  return { confirmReceipt }
+}
 // 查看物流逻辑
 export const logisticFn = () => {
   const OrderLogisticCom = ref(null)

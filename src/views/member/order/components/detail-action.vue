@@ -19,9 +19,9 @@
         >
           立即付款
         </XtxButton>
-        <XtxButton type="gray" size="small" @click="cancelHandler(order)"
-          >取消订单</XtxButton
-        >
+        <XtxButton type="gray" size="small" @click="cancelHandler(order)">
+          取消订单
+        </XtxButton>
       </template>
       <!-- 已超时 -->
       <template v-if="order.orderState === 1 && order.countdown === -1">
@@ -33,7 +33,9 @@
       </template>
       <!-- 3待收货 -->
       <template v-if="order.orderState === 3">
-        <XtxButton type="primary" size="small">确认收货</XtxButton>
+        <XtxButton type="primary" size="small" @click="confirmReceipt(order)">
+          确认收货
+        </XtxButton>
         <XtxButton type="plain" size="small">再次购买</XtxButton>
       </template>
       <!-- 4待评价 -->
@@ -58,7 +60,8 @@
 <script>
 import { orderStatus } from '@/api/constant'
 import OrderCancel from './order-cancel.vue'
-import { cancelFn } from '../index.vue'
+import { cancelFn, confirmFn } from '../index.vue'
+import { inject } from '@vue/runtime-core'
 export default {
   name: 'DetailAction',
   components: { OrderCancel },
@@ -69,7 +72,9 @@ export default {
     }
   },
   setup (props) {
-    return { orderStatus, ...cancelFn() }
+    const refresh = inject('getOrderDetail')
+
+    return { orderStatus, ...cancelFn(refresh), ...confirmFn(refresh) }
   }
 }
 </script>

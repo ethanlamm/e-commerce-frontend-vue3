@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import { ref } from 'vue'
+import { provide, ref } from 'vue'
 import { getOrderDetail } from '@/api/pay'
 import { useRoute } from 'vue-router'
 import DetailAction from './components/detail-action.vue'
@@ -42,6 +42,8 @@ export default {
     getOrderDetail(route.params.id).then((data) => {
       order.value = data.result
     })
+
+    provide('getOrderDetail', getOrderDetail)
 
     return { order }
   }
