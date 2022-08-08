@@ -51,8 +51,9 @@ export default {
       curText.value = ''
     }
 
-    // 刷新页面
-    const reload = inject('reload')
+    // 再次请求数据
+    const getData = inject('getData')
+
     // 确认按钮--发请求
     const confirm = () => {
       // 判断是否有选择原因
@@ -69,7 +70,7 @@ export default {
           // 关闭对话框
           visibleDialog.value = false
           // 刷新页面
-          reload && reload()
+          getData && getData()
         }
       )
     }

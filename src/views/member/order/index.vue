@@ -75,6 +75,11 @@ export default {
         loading.value = false
       })
     }
+    // 订单状态修改后，刷新页面--即再次请求数据
+    // 请求当前页，page和orderState不用修改
+    // provide出去
+    provide('getData', getData)
+
     // 侦听 reactive 数据有bug
     watch(
       reqParams,
@@ -83,17 +88,6 @@ export default {
       },
       { immediate: true }
     )
-
-    // 订单状态修改后，刷新页面--即再次请求数据
-    const reload = () => {
-      // 再次请求数据
-      // reqParams.page = 1
-      // reqParams.orderState = 0
-      // 请求当前页，page和orderState不用修改
-      getData()
-    }
-    // provide出去
-    provide('reload', reload)
 
     // tab切换
     const tabChange = ({ index }) => {
@@ -125,7 +119,6 @@ export default {
       loading,
       reqParams,
       totalData,
-      reload,
       ...cancelFn(),
       deleteHandler
     }
