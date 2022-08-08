@@ -5,13 +5,19 @@
       <span>订单编号：{{ order.id }}</span>
       <!-- orderState订单状态：1为待付款、2为待发货、3为待收货、4为待评价、5为已完成、6为已取消 -->
       <!-- 1待付款，显示倒计时 -->
-      <span class="down-time" v-if="order.orderState === 1">
+      <span
+        class="down-time"
+        v-if="order.orderState === 1 && order.countdown > 0"
+      >
         <i class="iconfont icon-down-time"></i>
-        <b>付款截止：{{ timeText }}</b>
+        <b>
+          付款截止：
+          <span>{{ timeText }}</span>
+        </b>
       </span>
       <!-- 5为已完成、6为已取消，显示删除按钮 -->
       <a
-        v-if="[5, 6].includes(order.orederState)"
+        v-if="[5, 6].includes(order.orederState) || order.countdown === -1"
         href="javascript:;"
         class="del"
       >
@@ -36,9 +42,16 @@
       </div>
       <div class="column state">
         <p>{{ orderStatus[order.orderState].label }}</p>
+        <!-- 1待付款，但已超时 => 订单已超时 -->
         <!-- 3待收货 => 查看物流 -->
         <!-- 4待评价 => 评价商品 -->
         <!-- 5已完成 => 查看评价 -->
+        <p
+          v-if="order.orderState === 1 && order.countdown == -1"
+          class="outOfTime"
+        >
+          订单已超时
+        </p>
         <p v-if="order.orderState === 3">
           <a href="javascript:;" class="green">查看物流</a>
         </p>
@@ -61,14 +74,21 @@
         <!-- 4待评价：查看详情，再次购买，申请售后 -->
         <!-- 5已完成：查看详情，再次购买，申请售后 -->
         <!-- 6已取消：查看详情 -->
-        <XtxButton v-if="order.orderState === 1" type="primary" size="small">
+        <XtxButton
+          v-if="order.orderState === 1 && order.countdown > 0"
+          type="primary"
+          size="small"
+          @click="$router.push(`/member/pay?orderId=${order.id}`)"
+        >
           立即付款
         </XtxButton>
         <XtxButton v-if="order.orderState === 3" type="primary" size="small">
           确认收货
         </XtxButton>
         <p><a href="javascript:;">查看详情</a></p>
-        <p v-if="order.orderState === 1"><a href="javascript:;">取消订单</a></p>
+        <p v-if="order.orderState === 1 && order.countdown > 0">
+          <a href="javascript:;">取消订单</a>
+        </p>
         <p v-if="[2, 3, 4, 5].includes(order.orderState)">
           <a href="javascript:;">再次购买</a>
         </p>
@@ -93,7 +113,9 @@ export default {
   },
   setup (props) {
     const { start, timeText } = usePayTime()
-    start(props.order.countdown)
+    if (props.order.countdown > -1) {
+      start(props.order.countdown)
+    }
 
     return { timeText, orderStatus }
   }
@@ -122,6 +144,10 @@ export default {
         b {
           vertical-align: middle;
           font-weight: normal;
+          span {
+            font-weight: 600;
+            color: @priceColor;
+          }
         }
       }
     }
@@ -140,6 +166,9 @@ export default {
       padding: 20px;
       > p {
         padding-top: 10px;
+        &.outOfTime {
+          color: @priceColor;
+        }
       }
       &:first-child {
         border-left: none;
