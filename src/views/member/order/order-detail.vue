@@ -11,6 +11,15 @@
       <XtxStepsItem title="订单完成" />
     </XtxSteps>
     <!-- 物流栏 -->
+    <suspense v-if="[3, 4, 5].includes(order.orderState)">
+      <!-- default:setup是异步的组件 -->
+      <template #default>
+        <DetailLogistics :order="order"></DetailLogistics>
+      </template>
+      <template #fallback>
+        <div class="loading">loading...</div>
+      </template>
+    </suspense>
     <!-- 订单商品信息 -->
   </div>
 </template>
@@ -20,9 +29,10 @@ import { ref } from 'vue'
 import { getOrderDetail } from '@/api/pay'
 import { useRoute } from 'vue-router'
 import DetailAction from './components/detail-action.vue'
+import DetailLogistics from './components/detail-logistic.vue'
 export default {
   name: 'OrderDetail',
-  components: { DetailAction },
+  components: { DetailAction, DetailLogistics },
   setup (props) {
     const route = useRoute()
     const order = ref(null)
@@ -40,5 +50,13 @@ export default {
 .order-detail {
   background: #fff;
   height: 100%;
+}
+.loading {
+  height: 50px;
+  display: flex;
+  align-items: center;
+  padding: 0 30px;
+  background-color: #f5f5f5;
+  margin: 30px 50px 0;
 }
 </style>
