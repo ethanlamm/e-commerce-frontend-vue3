@@ -21,3 +21,13 @@ export const getCollect = ({ page = 1, pageSize = 10, collectType = 1 }) => {
 export const getOrderList = ({ page = 1, pageSize = 10, orderState = 0 }) => {
   return request('/member/order', 'get', { page, pageSize, orderState })
 }
+
+/**
+ * 取消订单
+ * @param {String} orderId - 订单ID
+ * @param {String} cancelReason - 取消原因
+ * @returns Promise
+ */
+export const cancelOrder = ({ id, cancelReason }) => {
+  return request(`/member/order/${id}/cancel`, 'put', { cancelReason })
+}

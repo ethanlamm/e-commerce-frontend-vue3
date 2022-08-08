@@ -16,6 +16,7 @@
         v-for="item in orderList"
         :key="item.id"
         :order="item"
+        @on-cancel="cancelHandler"
       ></OrderItem>
       <!-- 数据加载中 -->
       <div v-if="loading" class="loading"></div>
@@ -30,17 +31,20 @@
       :totalData="totalData"
       @pageChange="reqParams.page = $event"
     ></XtxPagination>
+    <!-- 取消订单原因组件 -->
+    <OrderCancel ref="OrderCancelCom"></OrderCancel>
   </div>
 </template>
 
 <script>
-import { reactive, ref, watch } from 'vue'
+import { reactive, ref, watch, provide } from 'vue'
 import { orderStatus } from '@/api/constant.js'
 import OrderItem from './components/order-item.vue'
 import { getOrderList } from '@/api/my'
+import OrderCancel from './components/order-cancel.vue'
 export default {
   name: 'MemberOrder',
-  components: { OrderItem },
+  components: { OrderItem, OrderCancel },
   setup (props) {
     // 默认选中 全部订单
     const activeName = ref('all')
@@ -56,21 +60,36 @@ export default {
       pageSize: 5,
       orderState: 0
     })
+
     // 发请求
+    const getData = () => {
+      // 开始请求数据
+      loading.value = true
+      getOrderList(reqParams).then((data) => {
+        orderList.value = data.result.items
+        totalData.value = data.result.counts
+        // 请求完毕
+        loading.value = false
+      })
+    }
+    // 侦听 reactive 数据有bug
     watch(
       reqParams,
       () => {
-        // 开始请求数据
-        loading.value = true
-        getOrderList(reqParams).then((data) => {
-          orderList.value = data.result.items
-          totalData.value = data.result.counts
-          // 请求完毕
-          loading.value = false
-        })
+        getData()
       },
       { immediate: true }
     )
+
+    // 订单状态修改后，刷新页面--即再次请求数据
+    const reload = () => {
+      // 再次请求数据
+      reqParams.page = 1
+      reqParams.orderState = 0
+      getData()
+    }
+    // provide出去
+    provide('reload', reload)
 
     // tab切换
     const tabChange = ({ index }) => {
@@ -87,9 +106,23 @@ export default {
       orderList,
       loading,
       reqParams,
-      totalData
+      totalData,
+      reload,
+      ...cancelFn()
     }
   }
+}
+// 取消订单逻辑
+const cancelFn = () => {
+  // 父组件获取子组件实例
+  const OrderCancelCom = ref(null)
+
+  const cancelHandler = (order) => {
+    // 打开对话框
+    OrderCancelCom.value.open(order)
+  }
+
+  return { cancelHandler, OrderCancelCom }
 }
 </script>
 
