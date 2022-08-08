@@ -31,3 +31,12 @@ export const getOrderList = ({ page = 1, pageSize = 10, orderState = 0 }) => {
 export const cancelOrder = ({ id, cancelReason }) => {
   return request(`/member/order/${id}/cancel`, 'put', { cancelReason })
 }
+
+/**
+ * 删除订单
+ * @param {Array<string>} ids - 删除订单，id集合
+ * @returns
+ */
+export const delteOrder = (ids) => {
+  return request('/member/order', 'delete', { ids })
+}

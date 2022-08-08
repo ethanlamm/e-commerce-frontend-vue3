@@ -17,6 +17,7 @@
         :key="item.id"
         :order="item"
         @on-cancel="cancelHandler"
+        @on-delete="deleteHandler"
       ></OrderItem>
       <!-- 数据加载中 -->
       <div v-if="loading" class="loading"></div>
@@ -40,8 +41,10 @@
 import { reactive, ref, watch, provide } from 'vue'
 import { orderStatus } from '@/api/constant.js'
 import OrderItem from './components/order-item.vue'
-import { getOrderList } from '@/api/my'
+import { getOrderList, delteOrder } from '@/api/my'
 import OrderCancel from './components/order-cancel.vue'
+import Confirm from '@/components/library/Confirm'
+import Message from '@/components/library/message'
 export default {
   name: 'MemberOrder',
   components: { OrderItem, OrderCancel },
@@ -84,8 +87,9 @@ export default {
     // 订单状态修改后，刷新页面--即再次请求数据
     const reload = () => {
       // 再次请求数据
-      reqParams.page = 1
-      reqParams.orderState = 0
+      // reqParams.page = 1
+      // reqParams.orderState = 0
+      // 请求当前页，page和orderState不用修改
       getData()
     }
     // provide出去
@@ -99,6 +103,20 @@ export default {
       reqParams.page = 1
     }
 
+    // 删除订单
+    const deleteHandler = (order) => {
+      // 弹窗
+      Confirm('确认删除该订单吗？')
+        .then(() => {
+          delteOrder([order.id]).then(() => {
+            Message('删除订单成功', 'success')
+            // 再次请求数据
+            getData()
+          })
+        })
+        .catch(() => Message('您已取消删除订单'))
+    }
+
     return {
       activeName,
       tabChange,
@@ -108,7 +126,8 @@ export default {
       reqParams,
       totalData,
       reload,
-      ...cancelFn()
+      ...cancelFn(),
+      deleteHandler
     }
   }
 }

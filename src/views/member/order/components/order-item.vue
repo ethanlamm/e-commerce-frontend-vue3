@@ -20,8 +20,9 @@
         v-if="[5, 6].includes(order.orederState) || order.countdown === -1"
         href="javascript:;"
         class="del"
+        @click="$emit('on-delete', order)"
       >
-        删除
+        删除订单
       </a>
     </div>
     <div class="body">
@@ -118,7 +119,7 @@ export default {
       default: () => {}
     }
   },
-  emits: ['on-cancel'],
+  emits: ['on-cancel', 'on-delete'],
   setup (props) {
     const { start, timeText } = usePayTime()
     if (props.order.countdown > -1) {
