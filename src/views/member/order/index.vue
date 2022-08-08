@@ -19,6 +19,7 @@
         @on-cancel="cancelHandler"
         @on-delete="deleteHandler"
         @on-confirmReceipt="confirmReceipt"
+        @on-logistic="logisticHandler"
       ></OrderItem>
       <!-- 数据加载中 -->
       <div v-if="loading" class="loading"></div>
@@ -33,8 +34,10 @@
       :totalData="totalData"
       @pageChange="reqParams.page = $event"
     ></XtxPagination>
-    <!-- 取消订单原因组件 -->
+    <!-- 取消订单原因对话框 -->
     <OrderCancel ref="OrderCancelCom"></OrderCancel>
+    <!-- 查看物流对话框 -->
+    <OrderLogistic ref="OrderLogisticCom"></OrderLogistic>
   </div>
 </template>
 
@@ -44,11 +47,12 @@ import { orderStatus } from '@/api/constant.js'
 import OrderItem from './components/order-item.vue'
 import { getOrderList, delteOrder, confirmOrder } from '@/api/my'
 import OrderCancel from './components/order-cancel.vue'
+import OrderLogistic from './components/order-logistic.vue'
 import Confirm from '@/components/library/Confirm'
 import Message from '@/components/library/message'
 export default {
   name: 'MemberOrder',
-  components: { OrderItem, OrderCancel },
+  components: { OrderItem, OrderCancel, OrderLogistic },
   setup (props) {
     // 默认选中 全部订单
     const activeName = ref('all')
@@ -136,7 +140,8 @@ export default {
       totalData,
       ...cancelFn(),
       deleteHandler,
-      confirmReceipt
+      confirmReceipt,
+      ...logisticFn()
     }
   }
 }
@@ -151,6 +156,17 @@ const cancelFn = () => {
   }
 
   return { cancelHandler, OrderCancelCom }
+}
+
+// 查看物流逻辑
+const logisticFn = () => {
+  const OrderLogisticCom = ref(null)
+  const logisticHandler = (order) => {
+    // 打开查看物流对话框
+    OrderLogisticCom.value.open(order)
+  }
+
+  return { logisticHandler, OrderLogisticCom }
 }
 </script>
 
