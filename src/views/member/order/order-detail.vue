@@ -21,6 +21,7 @@
       </template>
     </suspense>
     <!-- 订单商品信息 -->
+    <DetailInfo :order="order"></DetailInfo>
   </div>
 </template>
 
@@ -30,9 +31,10 @@ import { getOrderDetail } from '@/api/pay'
 import { useRoute } from 'vue-router'
 import DetailAction from './components/detail-action.vue'
 import DetailLogistics from './components/detail-logistic.vue'
+import DetailInfo from './components/detail-info.vue'
 export default {
   name: 'OrderDetail',
-  components: { DetailAction, DetailLogistics },
+  components: { DetailAction, DetailLogistics, DetailInfo },
   setup (props) {
     const route = useRoute()
     const order = ref(null)
