@@ -159,7 +159,7 @@ const cancelFn = () => {
 }
 
 // 查看物流逻辑
-const logisticFn = () => {
+export const logisticFn = () => {
   const OrderLogisticCom = ref(null)
   const logisticHandler = (order) => {
     // 打开查看物流对话框
