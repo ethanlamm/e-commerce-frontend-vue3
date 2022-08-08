@@ -109,7 +109,12 @@
           <a href="javascript:;" @click="$emit('on-cancel', order)">取消订单</a>
         </p>
         <p v-if="[2, 3, 4, 5].includes(order.orderState)">
-          <a href="javascript:;">再次购买</a>
+          <a
+            href="javascript:;"
+            @click="$router.push(`/member/checkout?orderId=${order.id}`)"
+          >
+            再次购买
+          </a>
         </p>
         <p v-if="[4, 5].includes(order.orderState)">
           <a href="javascript:;">申请售后</a>

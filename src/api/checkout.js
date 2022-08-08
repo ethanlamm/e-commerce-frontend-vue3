@@ -3,10 +3,19 @@
 import request from '@/utils/request'
 
 /**
- *  生成订单
+ *  生成订单-依据购物车中的商品
  */
 export const createOrder = () => {
   return request('/member/order/pre', 'get')
+}
+
+/**
+ *  再次购买
+ *  生成订单-依据已购买商品再次生成订单
+ * @param {String} id 订单id
+ */
+export const repurchaseOrder = (id) => {
+  return request(`/member/order/repurchase/${id}`, 'get')
 }
 
 /**

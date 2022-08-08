@@ -103,14 +103,15 @@
 <script>
 import { provide, reactive, ref } from 'vue'
 import CheckoutAddress from './components/checkout-address.vue'
-import { createOrder, submitOrder } from '@/api/checkout'
+import { createOrder, submitOrder, repurchaseOrder } from '@/api/checkout'
 import Message from '@/components/library/message'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 export default {
   name: 'CheckoutVue',
   components: { CheckoutAddress },
   setup (props) {
     const order = ref(null)
+    const route = useRoute()
     // 获取订单数据函数
     const getOrderInfo = () => {
       createOrder()
@@ -126,7 +127,24 @@ export default {
           }
         })
     }
-    getOrderInfo()
+
+    // 两种情况
+    if (route.query.orderId) {
+      repurchaseOrder(route.query.orderId)
+        .then((data) => {
+          order.value = data.result
+          reqParams.goods = data.result.goods.map(({ skuId, count }) => {
+            return { skuId, count }
+          })
+        })
+        .catch((e) => {
+          if (e.response) {
+            Message(e.response.data.message || '生成订单失败')
+          }
+        })
+    } else {
+      getOrderInfo()
+    }
 
     provide('getOrderInfo', getOrderInfo)
 
