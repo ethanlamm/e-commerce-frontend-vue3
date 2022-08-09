@@ -3,10 +3,10 @@
     <!-- 操作栏 -->
     <DetailAction :order="order"></DetailAction>
     <!-- 步骤条-->
-    <XtxSteps :active="order.orderState === 6 ? 1 : order.orderState">
+    <XtxSteps :active="order.orderState" v-if="status && !outOfTime">
       <XtxStepsItem title="提交订单" desc="2021-03-18 02:11:47" />
-      <XtxStepsItem title="付款成功" desc="2021-03-18 02:11:47" />
-      <XtxStepsItem title="商品发货" desc="2021-03-18 02:11:47" />
+      <XtxStepsItem title="付款成功" desc="2021-03-18 02:15:03" />
+      <XtxStepsItem title="商品发货" desc="2021-03-18 11:11:37" />
       <XtxStepsItem title="确认收货" />
       <XtxStepsItem title="订单完成" />
     </XtxSteps>
@@ -37,15 +37,30 @@ export default {
   components: { DetailAction, DetailLogistics, DetailInfo },
   setup (props) {
     const route = useRoute()
+
+    const status = ref(null)
+    const outOfTime = ref(null)
+
     const order = ref(null)
 
     getOrderDetail(route.params.id).then((data) => {
       order.value = data.result
+      // 是否显示steps组件
+      // 1待付款(未超时) 2待发货 3待收货 4待评价 5已完成
+      status.value = [1, 2, 3, 4, 5].includes(order.value.orderState)
+      if (order.value.orderState === 1) {
+        if (order.value.countdown !== -1) {
+          // 未超时
+          outOfTime.value = false
+        } else {
+          outOfTime.value = true
+        }
+      }
     })
 
     provide('getOrderDetail', getOrderDetail)
 
-    return { order }
+    return { order, status, outOfTime }
   }
 }
 </script>
